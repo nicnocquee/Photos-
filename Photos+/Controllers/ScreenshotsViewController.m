@@ -16,12 +16,6 @@
 
 @implementation ScreenshotsViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    self.title = [self title];
-}
-
 - (BOOL)shouldIncludeAsset:(ALAsset *)asset {
     ALAssetRepresentation *assetRepresentation = [asset defaultRepresentation];
     CGSize size = [assetRepresentation dimensions];

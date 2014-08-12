@@ -33,7 +33,7 @@
 {
     [super viewDidLoad];
     
-    self.title = NSLocalizedString(@"All Photos", nil);
+    self.title = [self title];
     
     self.collectionViewDelegate = [[PhotosViewControllerCollectionViewDelegate alloc] initWithCollectionView:self.collectionView];
     [self.collectionView setDataSource:self];
@@ -89,6 +89,10 @@
 
 - (UIImage *)tabBarItemImage {
     return nil;
+}
+
+- (NSString *)title {
+    return NSLocalizedString(@"All Photos", nil);
 }
 
 #pragma mark - UICollectionViewDataSource
