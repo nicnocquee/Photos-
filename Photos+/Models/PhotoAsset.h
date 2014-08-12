@@ -24,9 +24,11 @@
 
 @property (nonatomic, assign, getter = isSelfies) BOOL selfies;
 
+@property (nonatomic, assign, getter = isDeleted) BOOL deleted;
+
 - (void)setALAsset:(ALAsset *)asset;
 
-- (void)loadAssetWithCompletion:(void(^)())completion;
+- (void)loadAssetWithCompletion:(void(^)(id asset))completion;
 
 - (BOOL)isEqualToPhotoAsset:(PhotoAsset *)asset;
 

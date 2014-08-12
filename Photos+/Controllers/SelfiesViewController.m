@@ -58,7 +58,7 @@
 }
 
 - (NSString *)cachedQueryString {
-    return @"selfies = true";
+    return @"selfies = true && deleted = false";
 }
 
 @end

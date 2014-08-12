@@ -49,20 +49,19 @@
 }
 
 - (void)loadPhotos {
+    [self showLoadingView:YES];
     __weak typeof (self) selfie = self;
     [self loadCachedWithCompletion:^{
-        [selfie showLoadingView:YES];
-        
         void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
         {
             if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
             {
-                [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
                     if (result) {
                         if ([selfie shouldIncludeAsset:result]) {
                             PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
                             [photoAsset setALAsset:result];
-                            [selfie.assets addObject:photoAsset];
+                            [selfie.assets insertObject:photoAsset atIndex:0];
                         }
                     }
                 }];
@@ -121,14 +120,21 @@
 
 - (void)loadCachedWithCompletion:(void (^)())completion {
     if ([self cachedQueryString]) {
-        RLMArray *cached = [PhotoAsset objectsInRealm:[RLMRealm defaultRealm] where:[self cachedQueryString]];
+        RLMRealm *realm = [RLMRealm defaultRealm];
+        RLMArray *cached = [PhotoAsset objectsInRealm:realm where:[self cachedQueryString]];
         if (cached.count > 0) {
             __weak typeof (self) selfie = self;
             __block int count = cached.count;
             for (PhotoAsset *asset in cached) {
-                [asset loadAssetWithCompletion:^{
-                    [selfie.assets addObject:asset];
+                [asset loadAssetWithCompletion:^(id completedAsset) {
                     count--;
+                    if (completedAsset) {
+                        [selfie.assets addObject:asset];
+                    } else {
+                        [realm beginWriteTransaction];
+                        [asset setDeleted:YES];
+                        [realm commitWriteTransaction];
+                    }
                     if (count == 0) {
                         [selfie.collectionView reloadData];
                         if (completion) {

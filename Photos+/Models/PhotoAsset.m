@@ -39,7 +39,7 @@
              NSStringFromSelector(@selector(metadata))];
 }
 
-- (void)loadAssetWithCompletion:(void (^)())completion {
+- (void)loadAssetWithCompletion:(void (^)(id asset))completion {
     if (self.urlString) {
         self.url = [NSURL URLWithString:self.urlString];
         if (self.url) {
@@ -49,10 +49,12 @@
                     self.assetRepresentation = [asset defaultRepresentation];
                     self.metadata = [self.assetRepresentation metadata];
                     if (completion) {
-                        completion();
+                        completion(asset);
                     }
                 } else {
-                    
+                    if (completion) {
+                        completion(nil);
+                    }
                 }
             } failureBlock:^(NSError *error) {
                 

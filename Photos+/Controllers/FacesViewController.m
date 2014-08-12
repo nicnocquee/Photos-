@@ -59,7 +59,7 @@
 }
 
 - (NSString *)cachedQueryString {
-    return @"hasFaces = true";
+    return @"hasFaces = true && deleted = false";
 }
 
 @end

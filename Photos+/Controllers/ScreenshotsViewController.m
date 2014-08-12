@@ -59,7 +59,7 @@
 }
 
 - (NSString *)cachedQueryString {
-    return @"screenshot = true";
+    return @"screenshot = true && deleted = false";
 }
 
 @end
