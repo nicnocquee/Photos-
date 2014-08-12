@@ -8,6 +8,10 @@
 
 #import "PhotosViewControllerCollectionViewDelegate.h"
 
+#import "PhotoCell.h"
+
+#import "PhotoAsset.h"
+
 @interface PhotosViewControllerCollectionViewDelegate ()
 
 @property (nonatomic, strong) NSValue *cellSize;
@@ -57,6 +61,12 @@
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return self.cellSpacing;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    PhotoCell *cell = (PhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    PhotoAsset *asset = cell.photoAsset;
+    return;
 }
 
 @end

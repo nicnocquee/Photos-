@@ -24,9 +24,17 @@
 
 @implementation PhotosViewController
 
+- (void)awakeFromNib {
+    self.navigationController.tabBarItem.title = [self tabBarItemTitle];
+    self.navigationController.tabBarItem.image = [self tabBarItemImage];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.title = NSLocalizedString(@"All Photos", nil);
+    
     self.collectionViewDelegate = [[PhotosViewControllerCollectionViewDelegate alloc] initWithCollectionView:self.collectionView];
     [self.collectionView setDataSource:self];
     [self.collectionView registerClass:[PhotoCell class] forCellWithReuseIdentifier:NSStringFromClass([PhotoCell class])];
@@ -52,9 +60,13 @@
         if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
         {
             [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
-                [photoAsset setAsset:result];
-                [selfie.assets addObject:photoAsset];
+                if (result) {
+                    if ([selfie shouldIncludeAsset:result]) {
+                        PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
+                        [photoAsset setAsset:result];
+                        [selfie.assets addObject:photoAsset];
+                    }
+                }
             }];
             
             *stop = YES;
@@ -65,6 +77,18 @@
     [self.library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                                 usingBlock:enumerate
                               failureBlock:nil];
+}
+
+- (BOOL)shouldIncludeAsset:(ALAsset *)asset {
+    return YES;
+}
+
+- (NSString *)tabBarItemTitle {
+    return self.title;
+}
+
+- (UIImage *)tabBarItemImage {
+    return nil;
 }
 
 #pragma mark - UICollectionViewDataSource

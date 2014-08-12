@@ -8,10 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import <AssetsLibrary/AssetsLibrary.h>
+
 @interface PhotosViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 
 @property (nonatomic, strong) NSMutableArray *assets;
+
+- (BOOL)shouldIncludeAsset:(ALAsset *)asset;
+
+- (NSString *)tabBarItemTitle;
+
+- (UIImage *)tabBarItemImage;
 
 @end

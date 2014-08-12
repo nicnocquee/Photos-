@@ -26,6 +26,8 @@
 		03A3A2701999EF470055EF9E /* PhotoCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A26F1999EF470055EF9E /* PhotoCellView.m */; };
 		03A3A2731999EF550055EF9E /* PhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A2721999EF550055EF9E /* PhotoCell.m */; };
 		03A3A2771999F5C20055EF9E /* PhotoAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A2761999F5C20055EF9E /* PhotoAsset.m */; };
+		03A3A27A199A27F40055EF9E /* ScreenshotsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A279199A27F40055EF9E /* ScreenshotsViewController.m */; };
+		03A3A27E199A2FC60055EF9E /* UIDevice+Additionals.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A27D199A2FC60055EF9E /* UIDevice+Additionals.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +69,10 @@
 		03A3A2721999EF550055EF9E /* PhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCell.m; sourceTree = "<group>"; };
 		03A3A2751999F5C20055EF9E /* PhotoAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoAsset.h; sourceTree = "<group>"; };
 		03A3A2761999F5C20055EF9E /* PhotoAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoAsset.m; sourceTree = "<group>"; };
+		03A3A278199A27F40055EF9E /* ScreenshotsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenshotsViewController.h; sourceTree = "<group>"; };
+		03A3A279199A27F40055EF9E /* ScreenshotsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenshotsViewController.m; sourceTree = "<group>"; };
+		03A3A27C199A2FC60055EF9E /* UIDevice+Additionals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+Additionals.h"; sourceTree = "<group>"; };
+		03A3A27D199A2FC60055EF9E /* UIDevice+Additionals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+Additionals.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +132,7 @@
 		03A3A2321999E9370055EF9E /* Photos+ */ = {
 			isa = PBXGroup;
 			children = (
+				03A3A27B199A2FA50055EF9E /* Categories */,
 				03A3A2741999F59E0055EF9E /* Models */,
 				03A3A2691999EE680055EF9E /* Views */,
 				03A3A23B1999E9370055EF9E /* AppDelegate.h */,
@@ -173,6 +180,8 @@
 				03A3A2651999EA9C0055EF9E /* Delegates */,
 				03A3A2611999E9DD0055EF9E /* PhotosViewController.h */,
 				03A3A2621999E9DD0055EF9E /* PhotosViewController.m */,
+				03A3A278199A27F40055EF9E /* ScreenshotsViewController.h */,
+				03A3A279199A27F40055EF9E /* ScreenshotsViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -205,6 +214,15 @@
 				03A3A2761999F5C20055EF9E /* PhotoAsset.m */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		03A3A27B199A2FA50055EF9E /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				03A3A27C199A2FC60055EF9E /* UIDevice+Additionals.h */,
+				03A3A27D199A2FC60055EF9E /* UIDevice+Additionals.m */,
+			);
+			path = Categories;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -311,6 +329,8 @@
 				03A3A2631999E9DD0055EF9E /* PhotosViewController.m in Sources */,
 				03A3A2701999EF470055EF9E /* PhotoCellView.m in Sources */,
 				03A3A2771999F5C20055EF9E /* PhotoAsset.m in Sources */,
+				03A3A27E199A2FC60055EF9E /* UIDevice+Additionals.m in Sources */,
+				03A3A27A199A27F40055EF9E /* ScreenshotsViewController.m in Sources */,
 				03A3A2391999E9370055EF9E /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
