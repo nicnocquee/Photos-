@@ -27,6 +27,9 @@
             <userDefinedRuntimeAttributes>
                 <userDefinedRuntimeAttribute type="boolean" keyPath="translatesAutoresizingMaskIntoConstraints" value="NO"/>
             </userDefinedRuntimeAttributes>
+            <connections>
+                <outlet property="imageView" destination="ERj-tB-ZZr" id="3Xk-4G-SDF"/>
+            </connections>
         </view>
     </objects>
 </document>

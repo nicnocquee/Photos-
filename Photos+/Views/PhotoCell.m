@@ -32,6 +32,15 @@
     return self;
 }
 
+- (void)prepareForReuse {
+    self.photoAsset = nil;
+}
 
+- (void)setPhotoAsset:(PhotoAsset *)photoAsset {
+    if (_photoAsset != photoAsset) {
+        _photoAsset = photoAsset;
+        [self.cellView.imageView setImage:_photoAsset.thumbnailImage];
+    }
+}
 
 @end

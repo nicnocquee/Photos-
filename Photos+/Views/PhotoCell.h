@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "PhotoAsset.h"
+
 @interface PhotoCell : UICollectionViewCell
+
+@property (nonatomic, strong) PhotoAsset *photoAsset;
 
 @end

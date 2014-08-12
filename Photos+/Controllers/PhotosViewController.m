@@ -12,9 +12,13 @@
 
 #import "PhotosViewControllerCollectionViewDelegate.h"
 
+#import "PhotoAsset.h"
+
 @interface PhotosViewController () <UICollectionViewDataSource>
 
 @property (nonatomic, strong) PhotosViewControllerCollectionViewDelegate *collectionViewDelegate;
+
+@property (nonatomic, strong) ALAssetsLibrary *library;
 
 @end
 
@@ -26,12 +30,41 @@
     self.collectionViewDelegate = [[PhotosViewControllerCollectionViewDelegate alloc] initWithCollectionView:self.collectionView];
     [self.collectionView setDataSource:self];
     [self.collectionView registerClass:[PhotoCell class] forCellWithReuseIdentifier:NSStringFromClass([PhotoCell class])];
+    
+    self.library = [[ALAssetsLibrary alloc] init];
+    
+    self.assets = [NSMutableArray array];
+    
+    [self loadPhotos];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)loadPhotos {
+    __weak typeof (self) selfie = self;
+    
+    void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
+    {
+        if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
+        {
+            [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
+                [photoAsset setAsset:result];
+                [selfie.assets addObject:photoAsset];
+            }];
+            
+            *stop = YES;
+            [selfie.collectionView reloadData];
+        }
+    };
+    
+    [self.library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
+                                usingBlock:enumerate
+                              failureBlock:nil];
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -41,12 +74,12 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 100;
+    return self.assets.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PhotoCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PhotoCell class]) forIndexPath:indexPath];
-    
+    [cell setPhotoAsset:[self.assets objectAtIndex:indexPath.item]];
     return cell;
 }
 
