@@ -29,6 +29,7 @@
 		03A3A27A199A27F40055EF9E /* ScreenshotsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A279199A27F40055EF9E /* ScreenshotsViewController.m */; };
 		03A3A27E199A2FC60055EF9E /* UIDevice+Additionals.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A27D199A2FC60055EF9E /* UIDevice+Additionals.m */; };
 		03A3A281199A369B0055EF9E /* SelfiesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A280199A369B0055EF9E /* SelfiesViewController.m */; };
+		03A3A284199A3D300055EF9E /* FacesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A283199A3D300055EF9E /* FacesViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,8 @@
 		03A3A27D199A2FC60055EF9E /* UIDevice+Additionals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+Additionals.m"; sourceTree = "<group>"; };
 		03A3A27F199A369B0055EF9E /* SelfiesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelfiesViewController.h; sourceTree = "<group>"; };
 		03A3A280199A369B0055EF9E /* SelfiesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelfiesViewController.m; sourceTree = "<group>"; };
+		03A3A282199A3D300055EF9E /* FacesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacesViewController.h; sourceTree = "<group>"; };
+		03A3A283199A3D300055EF9E /* FacesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacesViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,6 +190,8 @@
 				03A3A279199A27F40055EF9E /* ScreenshotsViewController.m */,
 				03A3A27F199A369B0055EF9E /* SelfiesViewController.h */,
 				03A3A280199A369B0055EF9E /* SelfiesViewController.m */,
+				03A3A282199A3D300055EF9E /* FacesViewController.h */,
+				03A3A283199A3D300055EF9E /* FacesViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -334,6 +339,7 @@
 				03A3A2631999E9DD0055EF9E /* PhotosViewController.m in Sources */,
 				03A3A2701999EF470055EF9E /* PhotoCellView.m in Sources */,
 				03A3A2771999F5C20055EF9E /* PhotoAsset.m in Sources */,
+				03A3A284199A3D300055EF9E /* FacesViewController.m in Sources */,
 				03A3A27E199A2FC60055EF9E /* UIDevice+Additionals.m in Sources */,
 				03A3A27A199A27F40055EF9E /* ScreenshotsViewController.m in Sources */,
 				03A3A281199A369B0055EF9E /* SelfiesViewController.m in Sources */,
