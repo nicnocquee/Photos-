@@ -20,23 +20,39 @@
 
 @property (nonatomic, strong) NSString *urlString;
 
+@property (nonatomic, strong) ALAsset *rawAsset;
+
 @end
 
 @implementation PhotoAsset
 
 - (void)setALAsset:(ALAsset *)asset {
-    self.thumbnailImage = [UIImage imageWithCGImage:[asset thumbnail]];
+    self.rawAsset = asset;
     self.assetRepresentation = [asset defaultRepresentation];
     self.url = [self.assetRepresentation url];
     self.urlString = [self.url absoluteString];
-    self.metadata = [self.assetRepresentation metadata];
+}
+
+- (UIImage *)thumbnailImage {
+    if (!_thumbnailImage) {
+        _thumbnailImage = [UIImage imageWithCGImage:[self.rawAsset thumbnail]];
+    }
+    return _thumbnailImage;
+}
+
+- (NSDictionary *)metadata {
+    if (!_metadata) {
+        _metadata = [self.assetRepresentation metadata];
+    }
+    return _metadata;
 }
 
 + (NSArray *)ignoredProperties {
     return @[NSStringFromSelector(@selector(thumbnailImage)),
              NSStringFromSelector(@selector(assetRepresentation)),
              NSStringFromSelector(@selector(url)),
-             NSStringFromSelector(@selector(metadata))];
+             NSStringFromSelector(@selector(metadata)),
+             NSStringFromSelector(@selector(rawAsset))];
 }
 
 - (void)loadAssetWithCompletion:(void (^)(id asset))completion {
@@ -45,9 +61,9 @@
         if (self.url) {
             [ASSETS_LIBRARY assetForURL:self.url resultBlock:^(ALAsset *asset) {
                 if (asset) {
+                    self.rawAsset = asset;
                     self.thumbnailImage = [UIImage imageWithCGImage:[asset thumbnail]];
                     self.assetRepresentation = [asset defaultRepresentation];
-                    self.metadata = [self.assetRepresentation metadata];
                     if (completion) {
                         completion(asset);
                     }

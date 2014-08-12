@@ -36,6 +36,36 @@
     return NO;
 }
 
+- (BOOL)assetHasBeenChecked:(ALAsset *)asset isSelfie:(BOOL*)isSelfie{
+    RLMRealm *realm = [RLMRealm defaultRealm];
+    RLMArray *cached = [PhotoAsset objectsInRealm:realm where:[self cachedQueryString]];
+    if (cached.count > 0) {
+        for (PhotoAsset *photo in cached) {
+            if ([photo.urlString isEqualToString:asset.defaultRepresentation.url.absoluteString] && photo.checkedForSelfies) {
+                *isSelfie = photo.isSelfies;
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
+- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset {
+    BOOL isSelfie;
+    if ([self assetHasBeenChecked:asset isSelfie:&isSelfie]) {
+        if (!isSelfie) {
+            return nil;
+        }
+    }
+    if (![self shouldIncludeAsset:asset]) {
+        return nil;
+    }
+    PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
+    [photoAsset setALAsset:asset];
+    [photoAsset setCheckedForSelfies:YES];
+    return photoAsset;
+}
+
 - (void)didFinishFetchingAssets {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         RLMRealm *realm = [RLMRealm defaultRealm];

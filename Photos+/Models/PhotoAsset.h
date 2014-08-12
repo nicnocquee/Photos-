@@ -26,6 +26,12 @@
 
 @property (nonatomic, assign, getter = isDeleted) BOOL deleted;
 
+@property (nonatomic, assign) BOOL checkedForSelfies;
+
+@property (nonatomic, assign) BOOL checkedForScreenshot;
+
+@property (nonatomic, assign) BOOL checkedForFaces;
+
 - (void)setALAsset:(ALAsset *)asset;
 
 - (void)loadAssetWithCompletion:(void(^)(id asset))completion;

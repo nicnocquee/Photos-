@@ -18,7 +18,7 @@
 
 - (CIDetector *)faceDetector {
     if (!_faceDetector) {
-        _faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:@{CIDetectorAccuracy: CIDetectorAccuracyHigh}];
+        _faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:@{CIDetectorAccuracy: CIDetectorAccuracyLow}];
     }
     return _faceDetector;
 }
@@ -28,12 +28,32 @@
 }
 
 - (BOOL)shouldIncludeAsset:(ALAsset *)asset {
+    RLMRealm *realm = [RLMRealm defaultRealm];
+    RLMArray *cached = [PhotoAsset objectsInRealm:realm where:[self cachedQueryString]];
+    if (cached.count > 0) {
+        for (PhotoAsset *photo in cached) {
+            if ([photo.urlString isEqualToString:asset.defaultRepresentation.url.absoluteString] && photo.checkedForFaces) {
+                return NO;
+            }
+        }
+    }
+    
     CIImage *image = [[CIImage alloc] initWithCGImage:[asset thumbnail]];
     NSArray *features = [self.faceDetector featuresInImage:image];
     if (features.count > 0) {
         return YES;
     }
     return NO;
+}
+
+- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset {
+    if (![self shouldIncludeAsset:asset]) {
+        return nil;
+    }
+    PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
+    [photoAsset setALAsset:asset];
+    [photoAsset setCheckedForFaces:YES];
+    return photoAsset;
 }
 
 - (void)didFinishFetchingAssets {

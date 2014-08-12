@@ -50,37 +50,78 @@
 
 - (void)loadPhotos {
     [self showLoadingView:YES];
-    __weak typeof (self) selfie = self;
+    
     [self loadCachedWithCompletion:^{
+        __weak typeof (self) selfie = self;
         void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
         {
             if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
             {
-                [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop2) {
+                    if ([selfie cachedQueryString]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [selfie setTitleWithAnalyzingIndex:index total:group.numberOfAssets];
+                        });
+                    }
+                    
                     if (result) {
-                        if ([selfie shouldIncludeAsset:result]) {
-                            PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
-                            [photoAsset setALAsset:result];
+                        PhotoAsset *photoAsset = [selfie photoAssetForALAsset:result];
+                        if (photoAsset) {
+                            NSInteger count = selfie.assets.count;
                             [selfie.assets insertObject:photoAsset atIndex:0];
+                            if (selfie.assets.count > count) {
+                                if ([selfie cachedQueryString]) {
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        [selfie.collectionView performBatchUpdates:^{
+                                            [selfie.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
+                                        } completion:^(BOOL finished) {
+                                            
+                                        }];
+                                    });
+                                }
+                            }
                         }
                     }
                 }];
                 
-                *stop = YES;
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    selfie.navigationItem.titleView = nil;
+                    selfie.navigationItem.title = [selfie title];
                     [selfie didFinishFetchingAssets];
                     [selfie showLoadingView:NO];
                     [selfie.collectionView reloadData];
                 });
+                *stop = YES;
             }
         };
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [ASSETS_LIBRARY enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                                           usingBlock:enumerate
-                                        failureBlock:nil];
+                                        failureBlock:^(NSError *error) {
+                                            NSLog(@"Error enumerate: %@", error);
+                                        }];
         });
     }];
+}
+
+- (void)setTitleWithAnalyzingIndex:(NSInteger)index total:(NSInteger)total {
+    if (index == total-1) {
+        [self.navigationItem setTitleView:nil];
+        self.navigationItem.title = [self title];
+    } else {
+        NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing %1$d of %2$d", nil), index, total];
+        NSString *text = [NSString stringWithFormat:@"%@\n%@", [self title], progressString];
+        NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
+        [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:[self title]]];
+        [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
+        UILabel *label = [[UILabel alloc] init];
+        [label setAttributedText:attr];
+        [label setNumberOfLines:2];
+        [label setTextAlignment:NSTextAlignmentCenter];
+        [label sizeToFit];
+        [self.navigationItem setTitleView:label];
+    }
 }
 
 - (void)showLoadingView:(BOOL)show {
@@ -92,6 +133,12 @@
     } else {
         [self.navigationItem setRightBarButtonItem:nil];
     }
+}
+
+- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset {
+    PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
+    [photoAsset setALAsset:asset];
+    return photoAsset;
 }
 
 - (BOOL)shouldIncludeAsset:(ALAsset *)asset {
@@ -124,7 +171,7 @@
         RLMArray *cached = [PhotoAsset objectsInRealm:realm where:[self cachedQueryString]];
         if (cached.count > 0) {
             __weak typeof (self) selfie = self;
-            __block int count = cached.count;
+            __block int count = (int)cached.count;
             for (PhotoAsset *asset in cached) {
                 [asset loadAssetWithCompletion:^(id completedAsset) {
                     count--;

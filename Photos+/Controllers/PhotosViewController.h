@@ -18,8 +18,6 @@
 
 @property (nonatomic, strong) NSMutableOrderedSet *assets;
 
-- (BOOL)shouldIncludeAsset:(ALAsset *)asset;
-
 - (NSString *)tabBarItemTitle;
 
 - (UIImage *)tabBarItemImage;
@@ -29,5 +27,7 @@
 - (void)loadCachedWithCompletion:(void(^)())completion;
 
 - (NSString *)cachedQueryString;
+
+- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset;
 
 @end
