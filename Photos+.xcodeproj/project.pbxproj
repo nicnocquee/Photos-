@@ -14,13 +14,17 @@
 		03A3A2391999E9370055EF9E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A2381999E9370055EF9E /* main.m */; };
 		03A3A23D1999E9370055EF9E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A23C1999E9370055EF9E /* AppDelegate.m */; };
 		03A3A2401999E9370055EF9E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03A3A23E1999E9370055EF9E /* Main.storyboard */; };
-		03A3A2431999E9370055EF9E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A2421999E9370055EF9E /* ViewController.m */; };
 		03A3A2451999E9370055EF9E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03A3A2441999E9370055EF9E /* Images.xcassets */; };
 		03A3A24C1999E9370055EF9E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A3A24B1999E9370055EF9E /* XCTest.framework */; };
 		03A3A24D1999E9370055EF9E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A3A22C1999E9370055EF9E /* Foundation.framework */; };
 		03A3A24E1999E9370055EF9E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A3A2301999E9370055EF9E /* UIKit.framework */; };
 		03A3A2561999E9370055EF9E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 03A3A2541999E9370055EF9E /* InfoPlist.strings */; };
 		03A3A2581999E9370055EF9E /* Photos_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A2571999E9370055EF9E /* Photos_Tests.m */; };
+		03A3A2631999E9DD0055EF9E /* PhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A2621999E9DD0055EF9E /* PhotosViewController.m */; };
+		03A3A2681999EABF0055EF9E /* PhotosViewControllerCollectionViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A2671999EABF0055EF9E /* PhotosViewControllerCollectionViewDelegate.m */; };
+		03A3A26B1999EE840055EF9E /* PhotoCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 03A3A26A1999EE840055EF9E /* PhotoCellView.xib */; };
+		03A3A2701999EF470055EF9E /* PhotoCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A26F1999EF470055EF9E /* PhotoCellView.m */; };
+		03A3A2731999EF550055EF9E /* PhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A2721999EF550055EF9E /* PhotoCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,14 +49,21 @@
 		03A3A23B1999E9370055EF9E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		03A3A23C1999E9370055EF9E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		03A3A23F1999E9370055EF9E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		03A3A2411999E9370055EF9E /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		03A3A2421999E9370055EF9E /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		03A3A2441999E9370055EF9E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		03A3A24A1999E9370055EF9E /* Photos+Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Photos+Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		03A3A24B1999E9370055EF9E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		03A3A2531999E9370055EF9E /* Photos+Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Photos+Tests-Info.plist"; sourceTree = "<group>"; };
 		03A3A2551999E9370055EF9E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03A3A2571999E9370055EF9E /* Photos_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Photos_Tests.m; sourceTree = "<group>"; };
+		03A3A2611999E9DD0055EF9E /* PhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotosViewController.h; sourceTree = "<group>"; };
+		03A3A2621999E9DD0055EF9E /* PhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotosViewController.m; sourceTree = "<group>"; };
+		03A3A2661999EABF0055EF9E /* PhotosViewControllerCollectionViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotosViewControllerCollectionViewDelegate.h; sourceTree = "<group>"; };
+		03A3A2671999EABF0055EF9E /* PhotosViewControllerCollectionViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotosViewControllerCollectionViewDelegate.m; sourceTree = "<group>"; };
+		03A3A26A1999EE840055EF9E /* PhotoCellView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoCellView.xib; sourceTree = "<group>"; };
+		03A3A26E1999EF470055EF9E /* PhotoCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoCellView.h; sourceTree = "<group>"; };
+		03A3A26F1999EF470055EF9E /* PhotoCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCellView.m; sourceTree = "<group>"; };
+		03A3A2711999EF550055EF9E /* PhotoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoCell.h; sourceTree = "<group>"; };
+		03A3A2721999EF550055EF9E /* PhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,13 +123,13 @@
 		03A3A2321999E9370055EF9E /* Photos+ */ = {
 			isa = PBXGroup;
 			children = (
+				03A3A2691999EE680055EF9E /* Views */,
 				03A3A23B1999E9370055EF9E /* AppDelegate.h */,
 				03A3A23C1999E9370055EF9E /* AppDelegate.m */,
 				03A3A23E1999E9370055EF9E /* Main.storyboard */,
-				03A3A2411999E9370055EF9E /* ViewController.h */,
-				03A3A2421999E9370055EF9E /* ViewController.m */,
 				03A3A2441999E9370055EF9E /* Images.xcassets */,
 				03A3A2331999E9370055EF9E /* Supporting Files */,
+				03A3A2641999E9E10055EF9E /* Controllers */,
 			);
 			path = "Photos+";
 			sourceTree = "<group>";
@@ -150,6 +161,37 @@
 				03A3A2541999E9370055EF9E /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		03A3A2641999E9E10055EF9E /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				03A3A2651999EA9C0055EF9E /* Delegates */,
+				03A3A2611999E9DD0055EF9E /* PhotosViewController.h */,
+				03A3A2621999E9DD0055EF9E /* PhotosViewController.m */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		03A3A2651999EA9C0055EF9E /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				03A3A2661999EABF0055EF9E /* PhotosViewControllerCollectionViewDelegate.h */,
+				03A3A2671999EABF0055EF9E /* PhotosViewControllerCollectionViewDelegate.m */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		03A3A2691999EE680055EF9E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				03A3A26A1999EE840055EF9E /* PhotoCellView.xib */,
+				03A3A26E1999EF470055EF9E /* PhotoCellView.h */,
+				03A3A26F1999EF470055EF9E /* PhotoCellView.m */,
+				03A3A2711999EF550055EF9E /* PhotoCell.h */,
+				03A3A2721999EF550055EF9E /* PhotoCell.m */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -228,6 +270,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03A3A26B1999EE840055EF9E /* PhotoCellView.xib in Resources */,
 				03A3A2451999E9370055EF9E /* Images.xcassets in Resources */,
 				03A3A2371999E9370055EF9E /* InfoPlist.strings in Resources */,
 				03A3A2401999E9370055EF9E /* Main.storyboard in Resources */,
@@ -249,8 +292,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03A3A2431999E9370055EF9E /* ViewController.m in Sources */,
+				03A3A2731999EF550055EF9E /* PhotoCell.m in Sources */,
 				03A3A23D1999E9370055EF9E /* AppDelegate.m in Sources */,
+				03A3A2681999EABF0055EF9E /* PhotosViewControllerCollectionViewDelegate.m in Sources */,
+				03A3A2631999E9DD0055EF9E /* PhotosViewController.m in Sources */,
+				03A3A2701999EF470055EF9E /* PhotoCellView.m in Sources */,
 				03A3A2391999E9370055EF9E /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

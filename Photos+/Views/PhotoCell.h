@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  PhotoCell.h
 //  Photos+
 //
 //  Created by  on 8/12/14.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface PhotoCell : UICollectionViewCell
 
 @end
