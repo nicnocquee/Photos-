@@ -53,6 +53,7 @@
 }
 
 - (void)loadPhotos {
+    [self showLoadingView:YES];
     __weak typeof (self) selfie = self;
     
     void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
@@ -70,6 +71,7 @@
             }];
             
             *stop = YES;
+            [selfie showLoadingView:NO];
             [selfie.collectionView reloadData];
         }
     };
@@ -77,6 +79,17 @@
     [self.library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                                 usingBlock:enumerate
                               failureBlock:nil];
+}
+
+- (void)showLoadingView:(BOOL)show {
+    if (show) {
+        UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        UIBarButtonItem *loadingItem = [[UIBarButtonItem alloc] initWithCustomView:indicator];
+        [self.navigationItem setRightBarButtonItem:loadingItem];
+        [indicator startAnimating];
+    } else {
+        [self.navigationItem setRightBarButtonItem:nil];
+    }
 }
 
 - (BOOL)shouldIncludeAsset:(ALAsset *)asset {
