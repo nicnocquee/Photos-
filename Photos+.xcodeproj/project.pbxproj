@@ -282,6 +282,9 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = Delightful;
 				TargetAttributes = {
+					03A3A2281999E9370055EF9E = {
+						DevelopmentTeam = NNTV3ZQR3E;
+					};
 					03A3A2491999E9370055EF9E = {
 						TestTargetID = 03A3A2281999E9370055EF9E;
 					};
@@ -468,10 +471,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Photos+/Photos+-Prefix.pch";
 				INFOPLIST_FILE = "Photos+/Photos+-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "f3265ebe-25df-48cc-a319-2a4be09ea34b";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -481,10 +486,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Photos+/Photos+-Prefix.pch";
 				INFOPLIST_FILE = "Photos+/Photos+-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "f3265ebe-25df-48cc-a319-2a4be09ea34b";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -548,6 +555,7 @@
 				03A3A25D1999E9370055EF9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		03A3A25E1999E9370055EF9E /* Build configuration list for PBXNativeTarget "Photos+Tests" */ = {
 			isa = XCConfigurationList;
@@ -556,6 +564,7 @@
 				03A3A2601999E9370055EF9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

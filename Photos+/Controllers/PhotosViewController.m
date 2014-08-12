@@ -60,7 +60,7 @@
     {
         if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
         {
-            [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+            [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
                 if (result) {
                     if ([selfie shouldIncludeAsset:result]) {
                         PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
@@ -71,14 +71,18 @@
             }];
             
             *stop = YES;
-            [selfie showLoadingView:NO];
-            [selfie.collectionView reloadData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [selfie showLoadingView:NO];
+                [selfie.collectionView reloadData];
+            });
         }
     };
     
-    [self.library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
-                                usingBlock:enumerate
-                              failureBlock:nil];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self.library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
+                                    usingBlock:enumerate
+                                  failureBlock:nil];
+    });
 }
 
 - (void)showLoadingView:(BOOL)show {
