@@ -18,8 +18,6 @@
 
 @property (nonatomic, strong) PhotosViewControllerCollectionViewDelegate *collectionViewDelegate;
 
-@property (nonatomic, strong) ALAssetsLibrary *library;
-
 @end
 
 @implementation PhotosViewController
@@ -38,10 +36,8 @@
     self.collectionViewDelegate = [[PhotosViewControllerCollectionViewDelegate alloc] initWithCollectionView:self.collectionView];
     [self.collectionView setDataSource:self];
     [self.collectionView registerClass:[PhotoCell class] forCellWithReuseIdentifier:NSStringFromClass([PhotoCell class])];
-    
-    self.library = [[ALAssetsLibrary alloc] init];
-    
-    self.assets = [NSMutableArray array];
+        
+    self.assets = [[NSMutableOrderedSet alloc] init];
     
     [self loadPhotos];
 }
@@ -53,36 +49,39 @@
 }
 
 - (void)loadPhotos {
-    [self showLoadingView:YES];
     __weak typeof (self) selfie = self;
-    
-    void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
-    {
-        if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
+    [self loadCachedWithCompletion:^{
+        [selfie showLoadingView:YES];
+        
+        void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
         {
-            [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                if (result) {
-                    if ([selfie shouldIncludeAsset:result]) {
-                        PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
-                        [photoAsset setAsset:result];
-                        [selfie.assets addObject:photoAsset];
+            if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
+            {
+                [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                    if (result) {
+                        if ([selfie shouldIncludeAsset:result]) {
+                            PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
+                            [photoAsset setALAsset:result];
+                            [selfie.assets addObject:photoAsset];
+                        }
                     }
-                }
-            }];
-            
-            *stop = YES;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [selfie showLoadingView:NO];
-                [selfie.collectionView reloadData];
-            });
-        }
-    };
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
-                                    usingBlock:enumerate
-                                  failureBlock:nil];
-    });
+                }];
+                
+                *stop = YES;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [selfie didFinishFetchingAssets];
+                    [selfie showLoadingView:NO];
+                    [selfie.collectionView reloadData];
+                });
+            }
+        };
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [ASSETS_LIBRARY enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
+                                          usingBlock:enumerate
+                                        failureBlock:nil];
+        });
+    }];
 }
 
 - (void)showLoadingView:(BOOL)show {
@@ -110,6 +109,44 @@
 
 - (NSString *)title {
     return NSLocalizedString(@"All Photos", nil);
+}
+
+- (void)didFinishFetchingAssets {
+    
+}
+
+- (NSString *)cachedQueryString {
+    return nil;
+}
+
+- (void)loadCachedWithCompletion:(void (^)())completion {
+    if ([self cachedQueryString]) {
+        RLMArray *cached = [PhotoAsset objectsInRealm:[RLMRealm defaultRealm] where:[self cachedQueryString]];
+        if (cached.count > 0) {
+            __weak typeof (self) selfie = self;
+            __block int count = cached.count;
+            for (PhotoAsset *asset in cached) {
+                [asset loadAssetWithCompletion:^{
+                    [selfie.assets addObject:asset];
+                    count--;
+                    if (count == 0) {
+                        [selfie.collectionView reloadData];
+                        if (completion) {
+                            completion();
+                        }
+                    }
+                }];
+            }
+        } else{
+            if (completion) {
+                completion();
+            }
+        }
+    } else {
+        if (completion) {
+            completion();
+        }
+    }
 }
 
 #pragma mark - UICollectionViewDataSource

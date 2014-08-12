@@ -13,4 +13,9 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
+    #import <Realm/Realm.h>
+    #import "AppDelegate.h"
 #endif
+
+#define APP_DELEGATE (AppDelegate *)[[UIApplication sharedApplication] delegate]
+#define ASSETS_LIBRARY [APP_DELEGATE assetsLibrary]

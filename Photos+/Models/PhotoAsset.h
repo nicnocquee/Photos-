@@ -6,14 +6,28 @@
 //  Copyright (c) 2014 Delightful. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 #import <AssetsLibrary/AssetsLibrary.h>
 
-@interface PhotoAsset : NSObject
-
-@property (nonatomic, strong) ALAsset *asset;
+@interface PhotoAsset : RLMObject
 
 @property (nonatomic, strong, readonly) UIImage *thumbnailImage;
+
+@property (nonatomic, strong, readonly) NSURL *url;
+
+@property (nonatomic, strong, readonly) NSString *urlString;
+
+@property (nonatomic, strong, readonly) NSDictionary *metadata;
+
+@property (nonatomic, assign, getter = isScreenshot) BOOL screenshot;
+
+@property (nonatomic, assign) BOOL hasFaces;
+
+@property (nonatomic, assign, getter = isSelfies) BOOL selfies;
+
+- (void)setALAsset:(ALAsset *)asset;
+
+- (void)loadAssetWithCompletion:(void(^)())completion;
+
+- (BOOL)isEqualToPhotoAsset:(PhotoAsset *)asset;
 
 @end

@@ -8,11 +8,16 @@
 
 #import "AppDelegate.h"
 
+#import <AssetsLibrary/AssetsLibrary.h>
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    //[self deleteRealmFile];
+    self.assetsLibrary = [[ALAssetsLibrary alloc] init];
+    
     NSLog(@"app delegate");
     return YES;
 }
@@ -42,6 +47,14 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (void)deleteRealmFile
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *path = [documentsDirectory stringByAppendingPathComponent:@"default.realm"];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 @end

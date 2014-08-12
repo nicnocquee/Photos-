@@ -10,16 +10,24 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
+#import "PhotoAsset.h"
+
 @interface PhotosViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 
-@property (nonatomic, strong) NSMutableArray *assets;
+@property (nonatomic, strong) NSMutableOrderedSet *assets;
 
 - (BOOL)shouldIncludeAsset:(ALAsset *)asset;
 
 - (NSString *)tabBarItemTitle;
 
 - (UIImage *)tabBarItemImage;
+
+- (void)didFinishFetchingAssets;
+
+- (void)loadCachedWithCompletion:(void(^)())completion;
+
+- (NSString *)cachedQueryString;
 
 @end
