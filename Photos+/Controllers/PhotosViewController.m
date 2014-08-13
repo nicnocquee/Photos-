@@ -57,7 +57,7 @@
         {
             if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
             {
-                [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop2) {
+                [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop2) {
                     if ([selfie cachedQueryString]) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [selfie setTitleWithAnalyzingIndex:index total:group.numberOfAssets];
@@ -68,12 +68,12 @@
                         PhotoAsset *photoAsset = [selfie photoAssetForALAsset:result];
                         if (photoAsset) {
                             NSInteger count = selfie.assets.count;
-                            [selfie.assets insertObject:photoAsset atIndex:0];
+                            [selfie.assets addObject:photoAsset];
                             if (selfie.assets.count > count) {
                                 if ([selfie cachedQueryString]) {
                                     dispatch_async(dispatch_get_main_queue(), ^{
                                         [selfie.collectionView performBatchUpdates:^{
-                                            [selfie.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
+                                            [selfie.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:selfie.assets.count-1 inSection:0]]];
                                         } completion:^(BOOL finished) {
                                             
                                         }];
@@ -95,7 +95,7 @@
             }
         };
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async([self libraryEnumerationQueue], ^{
             [ASSETS_LIBRARY enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                                           usingBlock:enumerate
                                         failureBlock:^(NSError *error) {
@@ -103,6 +103,10 @@
                                         }];
         });
     }];
+}
+
+- (dispatch_queue_t)libraryEnumerationQueue {
+    return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 }
 
 - (void)setTitleWithAnalyzingIndex:(NSInteger)index total:(NSInteger)total {

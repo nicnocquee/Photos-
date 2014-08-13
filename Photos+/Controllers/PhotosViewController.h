@@ -30,4 +30,6 @@
 
 - (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset;
 
+- (dispatch_queue_t)libraryEnumerationQueue;
+
 @end

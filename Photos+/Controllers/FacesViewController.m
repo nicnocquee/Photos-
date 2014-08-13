@@ -28,14 +28,33 @@
 }
 
 - (BOOL)shouldIncludeAsset:(ALAsset *)asset {
+    BOOL shouldCheckForFace = YES;
+    BOOL shouldIncludeAsset = NO;
+    
     RLMRealm *realm = [RLMRealm defaultRealm];
     RLMArray *cached = [PhotoAsset objectsInRealm:realm where:[self cachedQueryString]];
     if (cached.count > 0) {
         for (PhotoAsset *photo in cached) {
             if ([photo.urlString isEqualToString:asset.defaultRepresentation.url.absoluteString] && photo.checkedForFaces) {
-                return NO;
+                shouldCheckForFace = NO;
+                shouldIncludeAsset = photo.isScreenshot;
+            } else {
+                [realm beginWriteTransaction];
+                [photo setCheckedForFaces:YES];
+                [realm commitWriteTransaction];
             }
         }
+    } else {
+        PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
+        [photoAsset setALAsset:asset];
+        [photoAsset setCheckedForFaces:YES];
+        [realm beginWriteTransaction];
+        [realm addObject:photoAsset];
+        [realm commitWriteTransaction];
+    }
+    
+    if (!shouldCheckForFace) {
+        return shouldIncludeAsset;
     }
     
     CIImage *image = [[CIImage alloc] initWithCGImage:[asset thumbnail]];
@@ -50,36 +69,28 @@
     if (![self shouldIncludeAsset:asset]) {
         return nil;
     }
-    PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
+    RLMRealm *realm = [RLMRealm defaultRealm];
+    RLMArray *cached = [PhotoAsset objectsInRealm:realm where:@"urlString = %@", asset.defaultRepresentation.url.absoluteString];
+    PhotoAsset *photoAsset = [cached firstObject];
+    [realm beginWriteTransaction];
     [photoAsset setALAsset:asset];
     [photoAsset setCheckedForFaces:YES];
+    [photoAsset setHasFaces:YES];
+    [realm commitWriteTransaction];
     return photoAsset;
-}
-
-- (void)didFinishFetchingAssets {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        RLMRealm *realm = [RLMRealm defaultRealm];
-        
-        for (PhotoAsset *photoAsset in self.assets) {
-            RLMArray *cached = [PhotoAsset objectsInRealm:realm where:@"urlString = %@", photoAsset.urlString];
-            if ([cached firstObject]) {
-                PhotoAsset *asset = [cached firstObject];
-                [realm beginWriteTransaction];
-                [asset setHasFaces:YES];
-                [realm commitWriteTransaction];
-            } else {
-                [realm beginWriteTransaction];
-                [photoAsset setHasFaces:YES];
-                [realm addObject:photoAsset];
-                [realm commitWriteTransaction];
-            }
-            
-        }
-    });
 }
 
 - (NSString *)cachedQueryString {
     return @"hasFaces = true && deleted = false";
+}
+
+- (dispatch_queue_t)libraryEnumerationQueue {
+    static dispatch_queue_t queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = dispatch_queue_create("com.getdelightfulapp.faces", DISPATCH_QUEUE_SERIAL);
+    });
+    return queue;
 }
 
 @end
