@@ -40,6 +40,9 @@
     if (_photoAsset != photoAsset) {
         _photoAsset = photoAsset;
         [self.cellView.imageView setImage:_photoAsset.thumbnailImage];
+        [_photoAsset loadAssetWithCompletion:^(ALAsset *asset) {
+            if (asset) [self.cellView.imageView setImage:[UIImage imageWithCGImage:[asset thumbnail]]];
+        }];
     }
 }
 
