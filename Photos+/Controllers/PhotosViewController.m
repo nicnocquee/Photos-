@@ -114,11 +114,13 @@
         [self.navigationItem setTitleView:nil];
         self.navigationItem.title = [self title];
     } else {
-        NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing %1$d of %2$d", nil), index, total];
+        float progress = ((float)(total-index)/(float)total)*100;
+        NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing photos %.f%%", nil), progress];
         NSString *text = [NSString stringWithFormat:@"%@\n%@", [self title], progressString];
         NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
         [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:[self title]]];
         [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
+        
         UILabel *label = [[UILabel alloc] init];
         [label setAttributedText:attr];
         [label setNumberOfLines:2];
