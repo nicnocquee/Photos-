@@ -32,6 +32,8 @@
 
 @property (nonatomic, assign) BOOL checkedForFaces;
 
+@property (nonatomic, assign) NSInteger index;
+
 - (void)setALAsset:(ALAsset *)asset;
 
 - (void)loadAssetWithCompletion:(void(^)(id asset))completion;

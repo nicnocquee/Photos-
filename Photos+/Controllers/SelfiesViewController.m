@@ -65,7 +65,7 @@
     return NO;
 }
 
-- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset {
+- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset index:(NSInteger)index{
     if (![self shouldIncludeAsset:asset]) {
         return nil;
     }
@@ -74,6 +74,7 @@
     PhotoAsset *photoAsset = [cached firstObject];
     [realm beginWriteTransaction];
     [photoAsset setALAsset:asset];
+    [photoAsset setIndex:index];
     [photoAsset setSelfies:YES];
     [photoAsset setCheckedForSelfies:YES];
     [realm commitWriteTransaction];

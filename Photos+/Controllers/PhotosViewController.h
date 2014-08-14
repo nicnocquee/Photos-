@@ -28,7 +28,7 @@
 
 - (NSString *)cachedQueryString;
 
-- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset;
+- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset index:(NSInteger)index;
 
 - (dispatch_queue_t)libraryEnumerationQueue;
 
