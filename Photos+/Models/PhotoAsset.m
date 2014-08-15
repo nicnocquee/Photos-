@@ -8,6 +8,8 @@
 
 #import "PhotoAsset.h"
 
+#import "PhotosLibrary.h"
+
 @interface PhotoAsset ()
 
 @property (nonatomic, strong) UIImage *thumbnailImage;
@@ -59,7 +61,7 @@
     if (self.urlString) {
         self.url = [NSURL URLWithString:self.urlString];
         if (self.url) {
-            [ASSETS_LIBRARY assetForURL:self.url resultBlock:^(ALAsset *asset) {
+            [[[PhotosLibrary sharedLibrary] library] assetForURL:self.url resultBlock:^(ALAsset *asset) {
                 if (asset) {
                     self.rawAsset = asset;
                     self.thumbnailImage = [UIImage imageWithCGImage:[asset thumbnail]];

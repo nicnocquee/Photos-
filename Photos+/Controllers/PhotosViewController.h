@@ -22,14 +22,10 @@
 
 - (UIImage *)tabBarItemImage;
 
-- (void)didFinishFetchingAssets;
-
-- (void)loadCachedWithCompletion:(void(^)())completion;
-
 - (NSString *)cachedQueryString;
 
-- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset index:(NSInteger)index;
+- (void)setupNotifications;
 
-- (dispatch_queue_t)libraryEnumerationQueue;
+- (void)loadPhotos;
 
 @end
