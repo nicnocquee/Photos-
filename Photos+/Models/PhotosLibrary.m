@@ -100,6 +100,8 @@ static BOOL hasFacesAsset(ALAsset *asset) {
 
 @property (nonatomic, assign) NSInteger numberOfPhotosToCheck;
 
+@property (nonatomic, assign) BOOL loadingPhotos;
+
 @end
 
 @implementation PhotosLibrary
@@ -131,10 +133,14 @@ static BOOL hasFacesAsset(ALAsset *asset) {
 }
 
 - (void)loadPhotos {
-    RLMRealm *realm = [RLMRealm defaultRealm];
+    if (self.loadingPhotos) {
+        return;
+    }
+    self.loadingPhotos = YES;
     
     void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
     {
+        NSLog(@"start enumerating");
         if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
         {
             self.numberOfPhotosToCheck = self.numberOfPhotosToCheckForAllPhotos = self.numberOfPhotosToCheckForFaces = self.numberOfPhotosToCheckForScreenshots = self.numberOfPhotosToCheckForSelfies = group.numberOfAssets;
@@ -142,8 +148,10 @@ static BOOL hasFacesAsset(ALAsset *asset) {
             [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop2) {
                 
                 if (result) {
+                    RLMRealm *realm = [RLMRealm defaultRealm];
                     PhotoAsset *photoAsset = [[PhotoAsset objectsInRealm:realm where:@"urlString = %@", result.defaultRepresentation.url.absoluteString] firstObject];
                     if (!photoAsset) {
+                        NSLog(@"creating new asset");
                         photoAsset = [[PhotoAsset alloc] init];
                         [realm beginWriteTransaction];
                         [photoAsset setALAsset:result];
@@ -151,13 +159,24 @@ static BOOL hasFacesAsset(ALAsset *asset) {
                         [realm addObject:photoAsset];
                         [realm commitWriteTransaction];
                     } else {
+                        NSLog(@"updating existing asset");
                         [realm beginWriteTransaction];
                         [photoAsset setALAsset:result];
                         [photoAsset setIndex:index];
                         [realm commitWriteTransaction];
                     }
+                    NSLog(@"going to add asset to self.photos %@",result.defaultRepresentation.url.absoluteString);
+                    NSString *assetURL = photoAsset.urlString;
+                    NSBlockOperation *addAssetOperation = [NSBlockOperation blockOperationWithBlock:^{
+                        RLMRealm *realm4 = [RLMRealm defaultRealm];
+                        [realm4 setAutorefresh:YES];
+                        [realm4 refresh];
+                        PhotoAsset *photoAsset = [[PhotoAsset objectsInRealm:realm4 where:@"urlString = %@", assetURL] firstObject];
+                        [self.photos addObject:photoAsset];
+                        NSLog(@"added asset to self.photos");
+                    }];
                     
-                    [self.photos addObject:photoAsset];
+                    [[NSOperationQueue mainQueue] addOperations:@[addAssetOperation] waitUntilFinished:YES];
                     
                     if (index%100 == 0) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -167,10 +186,11 @@ static BOOL hasFacesAsset(ALAsset *asset) {
                     
                     if (!photoAsset.checkedForFaces) {
                         NSBlockOperation *facesOperation = [NSBlockOperation blockOperationWithBlock:^{
-                            RLMRealm *realm = [RLMRealm defaultRealm];
-                            [realm setAutorefresh:YES];
-                            PhotoAsset *photoAsset = [[PhotoAsset objectsInRealm:realm where:@"urlString = %@", result.defaultRepresentation.url.absoluteString] firstObject];
-                            [realm beginWriteTransaction];
+                            RLMRealm *realm1 = [RLMRealm defaultRealm];
+                            [realm1 setAutorefresh:YES];
+                            [realm1 refresh];
+                            PhotoAsset *photoAsset = [[PhotoAsset objectsInRealm:realm1 where:@"urlString = %@", result.defaultRepresentation.url.absoluteString] firstObject];
+                            [realm1 beginWriteTransaction];
                             if (hasFacesAsset(result)) {
                                 NSLog(@"found face");
                                 [photoAsset setHasFaces:YES];
@@ -178,80 +198,89 @@ static BOOL hasFacesAsset(ALAsset *asset) {
                                 [photoAsset setHasFaces:NO];
                             }
                             [photoAsset setCheckedForFaces:YES];
-                            [realm commitWriteTransaction];
+                            [realm1 commitWriteTransaction];
                             
                             if (photoAsset.hasFaces) {
+                                NSString *urlString = photoAsset.urlString;
                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:facesUpdatedNotification object:nil userInfo:@{insertedAssetKey: photoAsset.urlString}];
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:facesUpdatedNotification object:nil userInfo:@{insertedAssetKey: urlString}];
                                 }];
                             }
-                            NSLog(@"Done checking photo for faces");
                             self.numberOfPhotosToCheckForFaces--;
+                            realm1 = nil;
                         }];
                         
                         [self.operationsQueue addOperation:facesOperation];
+                    } else {
+                        self.numberOfPhotosToCheckForFaces--;
                     }
                     
                     if (!photoAsset.checkedForScreenshot) {
                         NSBlockOperation *screenshotOperation = [NSBlockOperation blockOperationWithBlock:^{
-                            RLMRealm *realm = [RLMRealm defaultRealm];
-                            [realm setAutorefresh:YES];
-                            PhotoAsset *photoAsset = [[PhotoAsset objectsInRealm:realm where:@"urlString = %@", result.defaultRepresentation.url.absoluteString] firstObject];
-                            [realm beginWriteTransaction];
+                            RLMRealm *realm2 = [RLMRealm defaultRealm];
+                            [realm2 setAutorefresh:YES];
+                            [realm2 refresh];
+                            PhotoAsset *photoAsset = [[PhotoAsset objectsInRealm:realm2 where:@"urlString = %@", result.defaultRepresentation.url.absoluteString] firstObject];
+                            [realm2 beginWriteTransaction];
                             if (isScreenshotAsset(result)) {
                                 [photoAsset setScreenshot:YES];
                             } else {
                                 [photoAsset setScreenshot:NO];
                             }
                             [photoAsset setCheckedForScreenshot:YES];
-                            [realm commitWriteTransaction];
+                            [realm2 commitWriteTransaction];
                             
                             if (photoAsset.isScreenshot) {
+                                NSString *urlString = photoAsset.urlString;
                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:screenshotsUpdatedNotification object:nil userInfo:@{insertedAssetKey: photoAsset.urlString}];
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:screenshotsUpdatedNotification object:nil userInfo:@{insertedAssetKey: urlString}];
                                 }];
                             }
-                            NSLog(@"Done checking photo for screenshots");
                             self.numberOfPhotosToCheckForScreenshots--;
+                            realm2 = nil;
                         }];
                         
                         [self.operationsQueue addOperation:screenshotOperation];
+                    } else {
+                        self.numberOfPhotosToCheckForScreenshots--;
                     }
                     
                     if (!photoAsset.checkedForSelfies) {
                         NSBlockOperation *selfieOperation = [NSBlockOperation blockOperationWithBlock:^{
-                            RLMRealm *realm = [RLMRealm defaultRealm];
-                            [realm setAutorefresh:YES];
-                            PhotoAsset *photoAsset = [[PhotoAsset objectsInRealm:realm where:@"urlString = %@", result.defaultRepresentation.url.absoluteString] firstObject];
-                            [realm beginWriteTransaction];
+                            RLMRealm *realm3 = [RLMRealm defaultRealm];
+                            [realm3 setAutorefresh:YES];
+                            [realm3 refresh];
+                            PhotoAsset *photoAsset = [[PhotoAsset objectsInRealm:realm3 where:@"urlString = %@", result.defaultRepresentation.url.absoluteString] firstObject];
+                            [realm3 beginWriteTransaction];
                             if (isSelfieAsset(result)) {
                                 [photoAsset setSelfies:YES];
                             } else {
                                 [photoAsset setSelfies:NO];
                             }
                             [photoAsset setCheckedForSelfies:YES];
-                            [realm commitWriteTransaction];
+                            [realm3 commitWriteTransaction];
                             
                             if (photoAsset.isSelfies) {
+                                NSString *urlString = photoAsset.urlString;
                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:selfiesUpdatedNotification object:nil userInfo:@{insertedAssetKey: photoAsset.urlString}];
+                                    [[NSNotificationCenter defaultCenter] postNotificationName:selfiesUpdatedNotification object:nil userInfo:@{insertedAssetKey: urlString}];
                                 }];
                             }
+                            self.numberOfPhotosToCheckForSelfies--;
+                            realm3 = nil;
                         }];
-                        NSLog(@"Done checking photo for selfies");
-                        self.numberOfPhotosToCheckForSelfies--;
                         
                         [self.operationsQueue addOperation:selfieOperation];
+                    } else {
+                        self.numberOfPhotosToCheckForSelfies--;
                     }
-                    
-                    
                 }
                 self.numberOfPhotosToCheckForAllPhotos--;
             }];
             
-            NSLog(@"number of photos to check for all photos = %d", self.numberOfPhotosToCheckForAllPhotos);
             NSLog(@"Done enumerating assets: %d", (int)self.photos.count);
             self.numberOfPhotos = self.photos.count;
+            self.loadingPhotos = NO;
             
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [[NSNotificationCenter defaultCenter] postNotificationName:photosUpdatedNotification object:nil userInfo:nil];
@@ -271,6 +300,7 @@ static BOOL hasFacesAsset(ALAsset *asset) {
 }
 
 - (void)assetsLibraryDidChangeNotification:(NSNotification *)notification {
+    NSLog(@"Library did change notification: %@", notification.userInfo);
     [self loadPhotos];
 }
 

@@ -92,7 +92,11 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         }
         [self setTitle:[NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count]];
     } else {
-        self.assets = [[PhotosLibrary sharedLibrary] photos];
+        [self.assets removeAllObjects];
+        RLMArray *photos = [PhotoAsset allObjectsInRealm:[RLMRealm defaultRealm]];
+        for (PhotoAsset *asset in photos) {
+            [self.assets addObject:asset];
+        }
         NSLog(@"number of assets: %d", (int)self.assets.count);
     }
     [self.collectionView reloadData];
