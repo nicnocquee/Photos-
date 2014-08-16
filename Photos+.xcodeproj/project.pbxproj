@@ -32,6 +32,7 @@
 		03A3A281199A369B0055EF9E /* SelfiesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A280199A369B0055EF9E /* SelfiesViewController.m */; };
 		03A3A284199A3D300055EF9E /* FacesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03A3A283199A3D300055EF9E /* FacesViewController.m */; };
 		03E14FCA199F29DB000F3ECE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03E14FC9199F29DB000F3ECE /* Crashlytics.framework */; };
+		03E14FCF199F2DD4000F3ECE /* AppDelegate+Services.m in Sources */ = {isa = PBXBuildFile; fileRef = 03E14FCE199F2DD4000F3ECE /* AppDelegate+Services.m */; };
 		3116FC63C2734B1EBEF94F7D /* libPods-Photos+.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 89DDB99A84074F3096D58B84 /* libPods-Photos+.a */; };
 /* End PBXBuildFile section */
 
@@ -85,6 +86,8 @@
 		03A3A282199A3D300055EF9E /* FacesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacesViewController.h; sourceTree = "<group>"; };
 		03A3A283199A3D300055EF9E /* FacesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacesViewController.m; sourceTree = "<group>"; };
 		03E14FC9199F29DB000F3ECE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		03E14FCD199F2DD4000F3ECE /* AppDelegate+Services.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+Services.h"; path = "Categories/AppDelegate+Services.h"; sourceTree = "<group>"; };
+		03E14FCE199F2DD4000F3ECE /* AppDelegate+Services.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+Services.m"; path = "Categories/AppDelegate+Services.m"; sourceTree = "<group>"; };
 		5510DB384C6D442EA4839A64 /* Pods-Photos+.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Photos+.xcconfig"; path = "Pods/Pods-Photos+.xcconfig"; sourceTree = "<group>"; };
 		89DDB99A84074F3096D58B84 /* libPods-Photos+.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Photos+.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -160,6 +163,8 @@
 				03A3A2441999E9370055EF9E /* Images.xcassets */,
 				03A3A2331999E9370055EF9E /* Supporting Files */,
 				03A3A2641999E9E10055EF9E /* Controllers */,
+				03E14FCD199F2DD4000F3ECE /* AppDelegate+Services.h */,
+				03E14FCE199F2DD4000F3ECE /* AppDelegate+Services.m */,
 			);
 			path = "Photos+";
 			sourceTree = "<group>";
@@ -404,6 +409,7 @@
 				036E38F9199C893200448BAA /* PhotosLibrary.m in Sources */,
 				03A3A2731999EF550055EF9E /* PhotoCell.m in Sources */,
 				03A3A23D1999E9370055EF9E /* AppDelegate.m in Sources */,
+				03E14FCF199F2DD4000F3ECE /* AppDelegate+Services.m in Sources */,
 				03A3A2681999EABF0055EF9E /* PhotosViewControllerCollectionViewDelegate.m in Sources */,
 				03A3A2631999E9DD0055EF9E /* PhotosViewController.m in Sources */,
 				03A3A2701999EF470055EF9E /* PhotoCellView.m in Sources */,

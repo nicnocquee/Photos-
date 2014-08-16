@@ -8,13 +8,13 @@
 
 #import "AppDelegate.h"
 
-#import <Crashlytics/Crashlytics.h>
+#import "AppDelegate+Services.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    
+    [self runCrashlyticsIfAvailable];
     //[self deleteRealmFile];
     
     [[PhotosLibrary sharedLibrary] loadPhotos];
