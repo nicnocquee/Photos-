@@ -114,9 +114,13 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         self.navigationItem.title = [NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count];
     } else {
         NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing photos %.f%%", nil), progress];
-        NSString *text = [NSString stringWithFormat:@"%@\n%@", [self title], progressString];
+        NSString *title = [self title];
+        if (self.assets.count > 0) {
+            title = [title stringByAppendingString:[NSString stringWithFormat:@" (%d)", (int)self.assets.count]];
+        }
+        NSString *text = [NSString stringWithFormat:@"%@\n%@", title, progressString];
         NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
-        [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:[self title]]];
+        [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:title]];
         [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
         
         UILabel *label = (UILabel *)self.navigationItem.titleView;
