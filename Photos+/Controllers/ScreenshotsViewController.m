@@ -16,66 +16,9 @@
 
 @implementation ScreenshotsViewController
 
-- (BOOL)shouldIncludeAsset:(ALAsset *)asset {
-    BOOL shouldCheckForScreenshot = YES;
-    BOOL shouldIncludeAsset = NO;
-    RLMRealm *realm = [RLMRealm defaultRealm];
-    RLMArray *cached = [PhotoAsset objectsInRealm:realm where:@"urlString = %@", asset.defaultRepresentation.url.absoluteString];
-    if (cached.count > 0) {
-        for (PhotoAsset *photo in cached) {
-            if (photo.checkedForScreenshot) {
-                shouldCheckForScreenshot = NO;
-                shouldIncludeAsset = photo.isScreenshot;
-                break;
-            } else {
-                [realm beginWriteTransaction];
-                [photo setCheckedForScreenshot:YES];
-                [realm commitWriteTransaction];
-            }
-        }
-    } else {
-        PhotoAsset *photoAsset = [[PhotoAsset alloc] init];
-        [photoAsset setALAsset:asset];
-        [photoAsset setCheckedForScreenshot:YES];
-        [realm beginWriteTransaction];
-        [realm addObject:photoAsset];
-        [realm commitWriteTransaction];
-    }
-    
-    if (!shouldCheckForScreenshot) {
-        return shouldIncludeAsset;
-    }
-    
-    ALAssetRepresentation *assetRepresentation = [asset defaultRepresentation];
-    CGSize size = [assetRepresentation dimensions];
-    CGSize windowSize = [[UIApplication sharedApplication] keyWindow].frame.size;
-    if (CGSizeEqualToSize(size, windowSize)) {
-        return YES;
-    }
-    
-    for (NSValue *dimension in [UIDevice deviceDimensions]) {
-        if (CGSizeEqualToSize(size, [dimension CGSizeValue])) {
-            return YES;
-        }
-    }
-    
-    return NO;
-}
-
-- (PhotoAsset *)photoAssetForALAsset:(ALAsset *)asset index:(NSInteger)index {
-    if (![self shouldIncludeAsset:asset]) {
-        return nil;
-    }
-    RLMRealm *realm = [RLMRealm defaultRealm];
-    RLMArray *cached = [PhotoAsset objectsInRealm:realm where:@"urlString = %@", asset.defaultRepresentation.url.absoluteString];
-    PhotoAsset *photoAsset = [cached firstObject];
-    [realm beginWriteTransaction];
-    [photoAsset setALAsset:asset];
-    [photoAsset setIndex:index];
-    [photoAsset setCheckedForScreenshot:YES];
-    [photoAsset setScreenshot:YES];
-    [realm commitWriteTransaction];
-    return photoAsset;
+- (void)setupNotifications {
+    NSLog(@"setup notification in sccreenhsots vc");
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(screenshotsDidChangeNotification:) name:screenshotsUpdatedNotification object:nil];
 }
 
 - (NSString *)title {
@@ -86,13 +29,9 @@
     return @"screenshot = true && deleted = false";
 }
 
-- (dispatch_queue_t)libraryEnumerationQueue {
-    static dispatch_queue_t queue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("com.getdelightfulapp.screenshots", DISPATCH_QUEUE_SERIAL);
-    });
-    return queue;
+- (void)screenshotsDidChangeNotification:(NSNotification *)notification {
+    NSLog(@"screenshots did change");
+    [self loadPhotos];
 }
 
 @end

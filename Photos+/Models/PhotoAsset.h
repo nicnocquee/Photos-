@@ -34,6 +34,8 @@
 
 @property (nonatomic, assign) NSInteger index;
 
+@property (nonatomic, strong, readonly) ALAsset *rawAsset;
+
 - (void)setALAsset:(ALAsset *)asset;
 
 - (void)loadAssetWithCompletion:(void(^)(id asset))completion;

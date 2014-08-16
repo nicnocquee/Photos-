@@ -8,16 +8,16 @@
 
 #import "AppDelegate.h"
 
-#import <AssetsLibrary/AssetsLibrary.h>
+#import "AppDelegate+Services.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    [self runCrashlyticsIfAvailable];
     //[self deleteRealmFile];
-    self.assetsLibrary = [[ALAssetsLibrary alloc] init];
     
+    [[PhotosLibrary sharedLibrary] loadPhotos];
     NSLog(@"app delegate");
     return YES;
 }
