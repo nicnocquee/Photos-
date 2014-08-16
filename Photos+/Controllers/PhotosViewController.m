@@ -14,6 +14,8 @@
 
 #import "PhotoAsset.h"
 
+static void * photosToCheckKVO = &photosToCheckKVO;
+
 @interface PhotosViewController () <UICollectionViewDataSource>
 
 @property (nonatomic, strong) PhotosViewControllerCollectionViewDelegate *collectionViewDelegate;
@@ -26,6 +28,7 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         [self setupNotifications];
+        [self initObservers];
     }
     return self;
 }
@@ -58,6 +61,10 @@
     [self loadPhotos];
 }
 
+- (void)initObservers {
+    [[PhotosLibrary sharedLibrary] addObserver:self forKeyPath:[self photosLibraryPropertyToObserve] options:NSKeyValueObservingOptionNew context:photosToCheckKVO];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -83,24 +90,28 @@
     return nil;
 }
 
-- (void)setTitleWithAnalyzingIndex:(NSInteger)index total:(NSInteger)total {
-    if (index == total-1) {
+- (void)setTitleForProgress:(NSNumber *)prog {
+    float progress = [prog floatValue];
+    if (progress >= 100) {
         [self.navigationItem setTitleView:nil];
-        self.navigationItem.title = [self title];
+        self.navigationItem.title = [NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count];
     } else {
-        float progress = ((float)(total-index)/(float)total)*100;
         NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing photos %.f%%", nil), progress];
         NSString *text = [NSString stringWithFormat:@"%@\n%@", [self title], progressString];
         NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
         [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:[self title]]];
         [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
         
-        UILabel *label = [[UILabel alloc] init];
+        UILabel *label = (UILabel *)self.navigationItem.titleView;
+        if (!label || label.tag == 1200) {
+            label = [[UILabel alloc] init];
+            [label setNumberOfLines:2];
+            label.tag = 1200;
+            [label setTextAlignment:NSTextAlignmentCenter];
+            [self.navigationItem setTitleView:label];
+        }
         [label setAttributedText:attr];
-        [label setNumberOfLines:2];
-        [label setTextAlignment:NSTextAlignmentCenter];
         [label sizeToFit];
-        [self.navigationItem setTitleView:label];
     }
 }
 
@@ -127,6 +138,10 @@
     return NSLocalizedString(@"All Photos", nil);
 }
 
+- (NSString *)photosLibraryPropertyToObserve {
+    return NSStringFromSelector(@selector(numberOfPhotosToCheckForAllPhotos));
+}
+
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -148,6 +163,19 @@
 - (void)photosLibraryDidChangeNotification:(NSNotification *)notification {
     NSLog(@"photos library did change");
     [self loadPhotos];
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (context == photosToCheckKVO) {
+        NSInteger index = [change[@"new"] integerValue];
+        NSInteger total = [[PhotosLibrary sharedLibrary] numberOfPhotosToCheck];
+        if (total > 0 && index >= 0) {
+            float progress = ((float)(total-index)/(float)total)*100;
+            [self performSelectorOnMainThread:@selector(setTitleForProgress:) withObject:@(progress) waitUntilDone:YES];
+        }
+    }
 }
 
 @end

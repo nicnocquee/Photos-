@@ -8,8 +8,6 @@
 
 #import "SelfiesViewController.h"
 
-#import <ImageIO/CGImageProperties.h>
-
 @interface SelfiesViewController ()
 
 @end
@@ -32,6 +30,10 @@
 - (void)selfiesDidChangeNotification:(NSNotification *)notification {
     NSLog(@"selfies did change");
     [self loadPhotos];
+}
+
+- (NSString *)photosLibraryPropertyToObserve {
+    return NSStringFromSelector(@selector(numberOfPhotosToCheckForSelfies));
 }
 
 @end

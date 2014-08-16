@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSMutableOrderedSet *assets;
 
+- (NSString *)photosLibraryPropertyToObserve;
+
 - (NSString *)tabBarItemTitle;
 
 - (UIImage *)tabBarItemImage;
@@ -27,5 +29,7 @@
 - (void)setupNotifications;
 
 - (void)loadPhotos;
+
+- (void)initObservers;
 
 @end
