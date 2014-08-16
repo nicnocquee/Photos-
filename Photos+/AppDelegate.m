@@ -8,11 +8,13 @@
 
 #import "AppDelegate.h"
 
+#import <Crashlytics/Crashlytics.h>
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    
     //[self deleteRealmFile];
     
     [[PhotosLibrary sharedLibrary] loadPhotos];
