@@ -72,6 +72,18 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (void)loadPhotos {
+    BOOL shouldScrollToLastItem = NO;
+    
+    CGPoint offset = self.collectionView.contentOffset;
+    CGRect bounds = self.collectionView.bounds;
+    UIEdgeInsets inset = self.collectionView.contentInset;
+    CGSize size = self.collectionView.contentSize;
+    float y = offset.y + bounds.size.height + inset.bottom;
+    float h = size.height;
+    if (y >= h  && h > 44) {
+        shouldScrollToLastItem = YES;
+    }
+    
     if ([self cachedQueryString]) {
         RLMRealm *realm = [RLMRealm defaultRealm];
         RLMArray *array = [PhotoAsset objectsInRealm:realm where:[self cachedQueryString]];
@@ -84,6 +96,11 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         NSLog(@"number of assets: %d", (int)self.assets.count);
     }
     [self.collectionView reloadData];
+    [self.collectionView layoutIfNeeded];
+    
+    if (shouldScrollToLastItem && self.assets.count > 0) {
+        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.assets.count-1 inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+    }
 }
 
 - (NSString *)cachedQueryString {
