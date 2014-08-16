@@ -2,7 +2,7 @@
 # platform :ios, "7.0"
 
 target "Photos+" do
-pod "Realm"
+pod "Realm", '0.83.0'
 end
 
 target "Photos+Tests" do

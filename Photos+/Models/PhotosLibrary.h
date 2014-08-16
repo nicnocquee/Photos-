@@ -28,6 +28,16 @@ extern NSString *deletedAssetKey;
 
 @property (nonatomic, assign, readonly) NSInteger numberOfPhotos;
 
+@property (nonatomic, assign, readonly) NSInteger numberOfPhotosToCheckForSelfies;
+
+@property (nonatomic, assign, readonly) NSInteger numberOfPhotosToCheckForScreenshots;
+
+@property (nonatomic, assign, readonly) NSInteger numberOfPhotosToCheckForFaces;
+
+@property (nonatomic, assign, readonly) NSInteger numberOfPhotosToCheck;
+
+@property (nonatomic, assign, readonly) NSInteger numberOfPhotosToCheckForAllPhotos;
+
 @property (nonatomic, strong, readonly) NSMutableOrderedSet *photos;
 
 @property (nonatomic, strong, readonly) ALAssetsLibrary *library;

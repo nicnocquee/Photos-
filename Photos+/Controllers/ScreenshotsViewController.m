@@ -34,4 +34,8 @@
     [self loadPhotos];
 }
 
+- (NSString *)photosLibraryPropertyToObserve {
+    return NSStringFromSelector(@selector(numberOfPhotosToCheckForScreenshots));
+}
+
 @end
