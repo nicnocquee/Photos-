@@ -133,6 +133,10 @@ static BOOL hasFacesAsset(ALAsset *asset) {
 }
 
 - (void)loadPhotos {
+    if (self.loadingPhotos) {
+        return;
+    }
+    self.loadingPhotos = YES;
     void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
     {
         //NSLog(@"start enumerating");
@@ -157,7 +161,7 @@ static BOOL hasFacesAsset(ALAsset *asset) {
                     }
                     [self.photos addObject:photoAsset];
                     
-                    if (index%100 == 0) {
+                    if (index%500 == 0) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                             [[NSNotificationCenter defaultCenter] postNotificationName:photosUpdatedNotification object:nil userInfo:nil];
                         }];

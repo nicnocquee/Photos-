@@ -94,12 +94,62 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         [self.assets addObjectsFromArray:photos];
         NSLog(@"number of assets: %d", (int)self.assets.count);
     }
+    [self setTitle:[NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count]];
+    
     [self.collectionView reloadData];
-    [self.collectionView layoutIfNeeded];
     
     if (shouldScrollToLastItem && self.assets.count > 0) {
+        [self.collectionView layoutIfNeeded];
         [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.assets.count-1 inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
+}
+
+- (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset {
+    NSInteger indexToInsert = 0;
+    NSInteger index = [self.assets indexOfObject:photoAsset];
+    if (index != NSNotFound) {
+        //NSLog(@"inserted asset exists, ignore");
+        indexToInsert = NSNotFound;
+    } else {
+        //NSLog(@"to insert asset index %d", (int)photoAsset.assetIndex);
+        NSOrderedSet *assets = [self.assets filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"assetIndex > %d", photoAsset.assetIndex]];
+        if (assets.count > 0) {
+            PhotoAsset *nextAsset = [assets lastObject];
+            //NSLog(@"last asset index %d", (int)nextAsset.assetIndex);
+            NSInteger indexInAssets = [self.assets indexOfObject:nextAsset];
+            NSInteger insertIndex = MAX(indexInAssets-1, 0);
+            [self.assets insertObject:photoAsset atIndex:insertIndex];
+            indexToInsert = insertIndex;
+        } else {
+            [self.assets insertObject:photoAsset atIndex:0];
+        }
+    }
+    [self.collectionView reloadData];
+    
+    if (indexToInsert != NSNotFound) {
+        BOOL shouldScrollToLastItem = NO;
+        
+        CGPoint offset = self.collectionView.contentOffset;
+        CGRect bounds = self.collectionView.bounds;
+        UIEdgeInsets inset = self.collectionView.contentInset;
+        CGSize size = self.collectionView.contentSize;
+        float y = offset.y + bounds.size.height + inset.bottom;
+        float h = size.height;
+        if (y >= h  && h > 44) {
+            shouldScrollToLastItem = YES;
+        }
+        
+        if (shouldScrollToLastItem) {
+            
+            [self.collectionView layoutIfNeeded];
+            [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:indexToInsert inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+        }
+    }
+    return indexToInsert;
+}
+
+- (void)removePhotoAsset:(PhotoAsset *)photoAsset {
+    
 }
 
 - (NSString *)cachedQueryString {
@@ -122,14 +172,11 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:title]];
         [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
         
-        UILabel *label = (UILabel *)self.navigationItem.titleView;
-        if (!label || label.tag == 1200) {
-            label = [[UILabel alloc] init];
-            [label setNumberOfLines:2];
-            label.tag = 1200;
-            [label setTextAlignment:NSTextAlignmentCenter];
-            [self.navigationItem setTitleView:label];
-        }
+        UILabel *label = [[UILabel alloc] init];
+        [label setNumberOfLines:2];
+        label.tag = 1200;
+        [label setTextAlignment:NSTextAlignmentCenter];
+        [self.navigationItem setTitleView:label];
         [label setAttributedText:attr];
         [label sizeToFit];
     }
@@ -181,7 +228,6 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 #pragma mark - Notifications
 
 - (void)photosLibraryDidChangeNotification:(NSNotification *)notification {
-    NSLog(@"photos library did change");
     [self loadPhotos];
 }
 
