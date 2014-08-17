@@ -1,10 +1,16 @@
 PODS:
-  - Realm (0.83.0)
+  - Realm:
+    - Realm/Headers
+  - Realm/Headers
 
 DEPENDENCIES:
-  - Realm (= 0.83.0)
+  - Realm (from `https://github.com/realm/realm-cocoa.git`)
+
+EXTERNAL SOURCES:
+  Realm:
+    :git: https://github.com/realm/realm-cocoa.git
 
 SPEC CHECKSUMS:
-  Realm: b37a36efdb3b592febd267e3ebab464c25b4a3bb
+  Realm: b67ebd0fa032630251c5c05113f650eeca92faba
 
 COCOAPODS: 0.33.1

@@ -2,7 +2,7 @@
 # platform :ios, "7.0"
 
 target "Photos+" do
-pod "Realm", '0.83.0'
+    pod "Realm", :git => 'https://github.com/realm/realm-cocoa.git'
 end
 
 target "Photos+Tests" do
