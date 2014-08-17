@@ -24,7 +24,7 @@
 }
 
 - (NSString *)cachedQueryString {
-    return @"selfies = true && deleted = false";
+    return @"selfies = 1";
 }
 
 - (void)selfiesDidChangeNotification:(NSNotification *)notification {

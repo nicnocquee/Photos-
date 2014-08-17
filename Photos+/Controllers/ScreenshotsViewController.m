@@ -26,7 +26,7 @@
 }
 
 - (NSString *)cachedQueryString {
-    return @"screenshot = true && deleted = false";
+    return @"screenshot = 1";
 }
 
 - (void)screenshotsDidChangeNotification:(NSNotification *)notification {

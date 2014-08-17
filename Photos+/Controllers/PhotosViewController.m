@@ -85,18 +85,13 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     }
     
     if ([self cachedQueryString]) {
-        RLMRealm *realm = [RLMRealm defaultRealm];
-        RLMArray *array = [PhotoAsset objectsInRealm:realm where:[self cachedQueryString]];
-        for (PhotoAsset *asset in array) {
-            [self.assets addObject:asset];
-        }
+        NSArray *photos = [PhotoAsset instancesWhere:[NSString stringWithFormat:@"%@ order by assetIndex desc", [self cachedQueryString]]];
+        [self.assets addObjectsFromArray:photos];
         [self setTitle:[NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count]];
     } else {
         [self.assets removeAllObjects];
-        RLMArray *photos = [PhotoAsset allObjectsInRealm:[RLMRealm defaultRealm]];
-        for (PhotoAsset *asset in photos) {
-            [self.assets addObject:asset];
-        }
+        NSArray *photos = [PhotoAsset instancesOrderedBy:@"assetIndex DESC"];
+        [self.assets addObjectsFromArray:photos];
         NSLog(@"number of assets: %d", (int)self.assets.count);
     }
     [self.collectionView reloadData];

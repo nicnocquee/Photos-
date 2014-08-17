@@ -26,7 +26,7 @@
 }
 
 - (NSString *)cachedQueryString {
-    return @"hasFaces = true && deleted = false";
+    return @"hasFaces = 1";
 }
 
 - (void)facesDidChangeNotification:(NSNotification *)notification {

@@ -1,8 +1,8 @@
 # Uncomment this line to define a global platform for your project
-# platform :ios, "7.0"
+platform :ios, "7.0"
 
 target "Photos+" do
-    pod "Realm", :git => 'https://github.com/realm/realm-cocoa.git'
+     pod "FCModel"
 end
 
 target "Photos+Tests" do

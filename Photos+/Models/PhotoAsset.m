@@ -20,8 +20,6 @@
 
 @property (nonatomic, strong) NSDictionary *metadata;
 
-@property (nonatomic, strong) NSString *urlString;
-
 @property (nonatomic, strong) ALAsset *rawAsset;
 
 @end
@@ -32,7 +30,6 @@
     self.rawAsset = asset;
     self.assetRepresentation = [asset defaultRepresentation];
     self.url = [self.assetRepresentation url];
-    self.urlString = [self.url absoluteString];
 }
 
 - (UIImage *)thumbnailImage {
@@ -58,8 +55,7 @@
 }
 
 - (void)loadAssetWithCompletion:(void (^)(id asset))completion {
-    if (self.urlString) {
-        self.url = [NSURL URLWithString:self.urlString];
+    if (self.url) {
         if (self.url) {
             [[[PhotosLibrary sharedLibrary] library] assetForURL:self.url resultBlock:^(ALAsset *asset) {
                 if (asset) {
@@ -86,7 +82,7 @@
         return NO;
     }
     
-    if (![asset.urlString isEqualToString:self.urlString]) {
+    if (![asset.url isEqual:self.url]) {
         return NO;
     }
     
@@ -98,7 +94,7 @@
 }
 
 - (NSUInteger)hash {
-    return self.urlString.hash;
+    return self.url.absoluteString.hash;
 }
 
 @end
