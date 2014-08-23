@@ -163,11 +163,11 @@ static BOOL hasFacesAsset(ALAsset *asset) {
                     }
                     [self.photos addObject:photoAsset];
                     
-                    if (index%500 == 0) {
+                    //if (index%500 == 0) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            [[NSNotificationCenter defaultCenter] postNotificationName:photosUpdatedNotification object:nil userInfo:nil];
+                            [[NSNotificationCenter defaultCenter] postNotificationName:photosUpdatedNotification object:nil userInfo:@{insertedAssetKey: photoAsset.url}];
                         }];
-                    }
+                    //}
                     
                     if (!photoAsset.checkedForFaces) {
                         NSBlockOperation *facesOperation = [NSBlockOperation blockOperationWithBlock:^{

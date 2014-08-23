@@ -109,6 +109,8 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 - (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset {
     NSInteger indexToInsert = 0;
     NSInteger index = [self.assets indexOfObject:photoAsset];
+    NSInteger count = self.assets.count;
+    
     if (index != NSNotFound) {
         //NSLog(@"inserted asset exists, ignore");
         indexToInsert = NSNotFound;
@@ -128,13 +130,9 @@ static void * photosToCheckKVO = &photosToCheckKVO;
             [self.assets insertObject:photoAsset atIndex:0];
         }
     }
-    [self.collectionView reloadData];
     
-    if (indexToInsert != NSNotFound) {
-        if (!self.collectionView.isDecelerating && !self.collectionView.isDragging) {
-            [self.collectionView layoutIfNeeded];
-            [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:indexToInsert inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
-        }
+    if (self.assets.count > count) {
+        [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:indexToInsert inSection:0]]];
     }
     return indexToInsert;
 }
@@ -224,7 +222,11 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 #pragma mark - Notifications
 
 - (void)photosLibraryDidChangeNotification:(NSNotification *)notification {
-    [self loadPhotos];
+    NSDictionary *userInfo = notification.userInfo;
+    if (userInfo[insertedAssetKey]) {
+        PhotoAsset *asset = [PhotoAsset firstInstanceWhere:@"url = ? order by assetIndex limit 1", userInfo[insertedAssetKey]];
+        [self insertPhotoAsset:asset];
+    }
 }
 
 #pragma mark - KVO
