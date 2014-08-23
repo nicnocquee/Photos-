@@ -14,6 +14,8 @@
 
 #import "PhotoAsset.h"
 
+#import "FacesViewController.h"
+
 static void * photosToCheckKVO = &photosToCheckKVO;
 
 @interface PhotosViewController () <UICollectionViewDataSource>
@@ -85,12 +87,12 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     }
     
     if ([self cachedQueryString]) {
-        NSArray *photos = [PhotoAsset instancesWhere:[NSString stringWithFormat:@"%@ order by assetIndex desc", [self cachedQueryString]]];
+        NSArray *photos = [PhotoAsset instancesWhere:[NSString stringWithFormat:@"%@ order by dateCreated desc", [self cachedQueryString]]];
         [self.assets addObjectsFromArray:photos];
         [self setTitle:[NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count]];
     } else {
         [self.assets removeAllObjects];
-        NSArray *photos = [PhotoAsset instancesOrderedBy:@"assetIndex DESC"];
+        NSArray *photos = [PhotoAsset instancesOrderedBy:@"dateCreated DESC"];
         [self.assets addObjectsFromArray:photos];
         NSLog(@"number of assets: %d", (int)self.assets.count);
     }
@@ -105,6 +107,9 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset {
+    if ([self isKindOfClass:[FacesViewController class]]) {
+        NSLog(@"inserting asset %d", (int)photoAsset.assetIndex);
+    }
     NSInteger indexToInsert = 0;
     NSInteger index = [self.assets indexOfObject:photoAsset];
     if (index != NSNotFound) {
@@ -112,12 +117,14 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         indexToInsert = NSNotFound;
     } else {
         //NSLog(@"to insert asset index %d", (int)photoAsset.assetIndex);
-        NSOrderedSet *assets = [self.assets filteredOrderedSetUsingPredicate:[NSPredicate predicateWithFormat:@"assetIndex > %d", photoAsset.assetIndex]];
+        NSArray *assets = [self.assets.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"assetIndex > %d", (int)photoAsset.assetIndex]];
         if (assets.count > 0) {
+            assets = [assets sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"assetIndex" ascending:NO]]];
             PhotoAsset *nextAsset = [assets lastObject];
+            NSAssert(nextAsset, @"Next asset should not be nil");
             //NSLog(@"last asset index %d", (int)nextAsset.assetIndex);
             NSInteger indexInAssets = [self.assets indexOfObject:nextAsset];
-            NSInteger insertIndex = MAX(indexInAssets-1, 0);
+            NSInteger insertIndex = MIN(indexInAssets+1, self.assets.count);
             [self.assets insertObject:photoAsset atIndex:insertIndex];
             indexToInsert = insertIndex;
         } else {
@@ -127,20 +134,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     [self.collectionView reloadData];
     
     if (indexToInsert != NSNotFound) {
-        BOOL shouldScrollToLastItem = NO;
-        
-        CGPoint offset = self.collectionView.contentOffset;
-        CGRect bounds = self.collectionView.bounds;
-        UIEdgeInsets inset = self.collectionView.contentInset;
-        CGSize size = self.collectionView.contentSize;
-        float y = offset.y + bounds.size.height + inset.bottom;
-        float h = size.height;
-        if (y >= h  && h > 44) {
-            shouldScrollToLastItem = YES;
-        }
-        
-        if (shouldScrollToLastItem) {
-            
+        if (!self.collectionView.isDecelerating && !self.collectionView.isDragging) {
             [self.collectionView layoutIfNeeded];
             [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:indexToInsert inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
         }

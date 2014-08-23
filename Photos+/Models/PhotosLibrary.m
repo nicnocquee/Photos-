@@ -133,22 +133,22 @@ static BOOL hasFacesAsset(ALAsset *asset) {
 }
 
 - (void)loadPhotos {
-    if (self.loadingPhotos) {
+    if (self.loadingPhotos && self.numberOfPhotosToCheckForAllPhotos > 0 && self.numberOfPhotosToCheckForFaces > 0 && self.numberOfPhotosToCheckForScreenshots > 0 && self.numberOfPhotosToCheckForSelfies > 0) {
         return;
     }
     self.loadingPhotos = YES;
     void (^enumerate)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
     {
         //NSLog(@"start enumerating");
+        [group setAssetsFilter:[ALAssetsFilter allPhotos]];
         if ([[group valueForProperty:ALAssetsGroupPropertyType] intValue] == ALAssetsGroupSavedPhotos)
         {
             self.numberOfPhotosToCheck = self.numberOfPhotosToCheckForAllPhotos = self.numberOfPhotosToCheckForFaces = self.numberOfPhotosToCheckForScreenshots = self.numberOfPhotosToCheckForSelfies = group.numberOfAssets;
-            
             [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop2) {
                 
                 if (result) {
 
-                    PhotoAsset *photoAsset = [PhotoAsset firstInstanceWhere:@"url = ? order by id limit 1", result.defaultRepresentation.url];
+                    PhotoAsset *photoAsset = [PhotoAsset firstInstanceWhere:@"url = ? order by assetIndex limit 1", result.defaultRepresentation.url];
                     if (!photoAsset) {
                         //NSLog(@"creating new asset");
                         photoAsset = [[PhotoAsset alloc] init];
@@ -156,8 +156,10 @@ static BOOL hasFacesAsset(ALAsset *asset) {
                         [photoAsset setAssetIndex:index];
                         [photoAsset save];
                     } else {
-                        [photoAsset setAssetIndex:index];
-                        [photoAsset save];
+                        if (photoAsset.assetIndex != index) {
+                            [photoAsset setAssetIndex:index];
+                            [photoAsset save];
+                        }
                     }
                     [self.photos addObject:photoAsset];
                     
@@ -252,7 +254,24 @@ static BOOL hasFacesAsset(ALAsset *asset) {
 }
 
 - (void)assetsLibraryDidChangeNotification:(NSNotification *)notification {
-    //NSLog(@"Library did change notification: %@", notification.userInfo);
+    NSDictionary *userInfo = notification.userInfo;
+    NSLog(@"Library did change notification: %@", userInfo);
+    if (userInfo) {
+        if (userInfo.count > 0) {
+            NSArray *updatedAssets = userInfo[ALAssetLibraryUpdatedAssetsKey];
+            for (NSURL *updatedAsset in updatedAssets) {
+                [self.library assetForURL:updatedAsset resultBlock:^(ALAsset *asset) {
+                    NSLog(@"here");
+                } failureBlock:^(NSError *error) {
+                    NSLog(@"error: %@", error);
+                }];
+            }
+        } else {
+            // empty dictionary no need to do anything
+        }
+    } else {
+        // need to reload all assets
+    }
     [self loadPhotos];
 }
 

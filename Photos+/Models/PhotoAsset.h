@@ -40,6 +40,8 @@
 
 @property (nonatomic, strong) NSDate *dateTaken;
 
+@property (nonatomic, strong) NSDate *dateCreated;
+
 @property (nonatomic, strong, readonly) ALAsset *rawAsset;
 
 - (void)setALAsset:(ALAsset *)asset;

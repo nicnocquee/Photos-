@@ -30,6 +30,7 @@
     self.rawAsset = asset;
     self.assetRepresentation = [asset defaultRepresentation];
     self.url = [self.assetRepresentation url];
+    self.dateCreated = [asset valueForProperty:ALAssetPropertyDate];
 }
 
 - (UIImage *)thumbnailImage {

@@ -79,7 +79,8 @@
                   @" location TEXT,"
                   @" cameraType TEXT,"
                   @" dateTaken REAL,"
-                  @" metadata BLOB"
+                  @" metadata BLOB,"
+                  @" dateCreated REAL"
                   @")"
                   ]) {
                 failedAt(1);
