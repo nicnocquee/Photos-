@@ -16,6 +16,11 @@
 {
     [self runCrashlyticsIfAvailable];
     
+    if (![self hasDatabase]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:NEW_DATABASE_DEFAULT_KEY];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    
     [self loadDatabase];
     
     [[PhotosLibrary sharedLibrary] loadPhotos];
@@ -95,6 +100,12 @@
         
         [db commit];
     }];
+}
+
+- (BOOL)hasDatabase {
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *dbPath = [documentsPath stringByAppendingPathComponent:@"photosplus.sqlite3"];
+    return [[NSFileManager defaultManager] fileExistsAtPath:dbPath];
 }
 
 @end

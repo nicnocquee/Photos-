@@ -17,3 +17,5 @@
     #import "PhotosLibrary.h"
     #import <FCModel.h>
 #endif
+
+#define NEW_DATABASE_DEFAULT_KEY @"NEW_DATABASE_DEFAULT_KEY"

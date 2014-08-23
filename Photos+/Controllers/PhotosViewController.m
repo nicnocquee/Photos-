@@ -107,9 +107,6 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset {
-    if ([self isKindOfClass:[FacesViewController class]]) {
-        NSLog(@"inserting asset %d", (int)photoAsset.assetIndex);
-    }
     NSInteger indexToInsert = 0;
     NSInteger index = [self.assets indexOfObject:photoAsset];
     if (index != NSNotFound) {
@@ -121,7 +118,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         if (assets.count > 0) {
             assets = [assets sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"assetIndex" ascending:NO]]];
             PhotoAsset *nextAsset = [assets lastObject];
-            NSAssert(nextAsset, @"Next asset should not be nil");
+            NSAssert(nextAsset, @"Next asset should not be nil");   
             //NSLog(@"last asset index %d", (int)nextAsset.assetIndex);
             NSInteger indexInAssets = [self.assets indexOfObject:nextAsset];
             NSInteger insertIndex = MIN(indexInAssets+1, self.assets.count);
@@ -151,28 +148,33 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (void)setTitleForProgress:(NSNumber *)prog {
-    float progress = [prog floatValue];
-    if (progress >= 100) {
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:NEW_DATABASE_DEFAULT_KEY]) {
         [self.navigationItem setTitleView:nil];
         self.navigationItem.title = [NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count];
     } else {
-        NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing photos %.f%%", nil), progress];
-        NSString *title = [self title];
-        if (self.assets.count > 0) {
-            title = [title stringByAppendingString:[NSString stringWithFormat:@" (%d)", (int)self.assets.count]];
+        float progress = [prog floatValue];
+        if (progress >= 100) {
+            [self.navigationItem setTitleView:nil];
+            self.navigationItem.title = [NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count];
+        } else {
+            NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing photos %.f%%", nil), progress];
+            NSString *title = [self title];
+            if (self.assets.count > 0) {
+                title = [title stringByAppendingString:[NSString stringWithFormat:@" (%d)", (int)self.assets.count]];
+            }
+            NSString *text = [NSString stringWithFormat:@"%@\n%@", title, progressString];
+            NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
+            [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:title]];
+            [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
+            
+            UILabel *label = [[UILabel alloc] init];
+            [label setNumberOfLines:2];
+            label.tag = 1200;
+            [label setTextAlignment:NSTextAlignmentCenter];
+            [self.navigationItem setTitleView:label];
+            [label setAttributedText:attr];
+            [label sizeToFit];
         }
-        NSString *text = [NSString stringWithFormat:@"%@\n%@", title, progressString];
-        NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
-        [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:title]];
-        [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
-        
-        UILabel *label = [[UILabel alloc] init];
-        [label setNumberOfLines:2];
-        label.tag = 1200;
-        [label setTextAlignment:NSTextAlignmentCenter];
-        [self.navigationItem setTitleView:label];
-        [label setAttributedText:attr];
-        [label sizeToFit];
     }
 }
 

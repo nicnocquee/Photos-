@@ -296,6 +296,10 @@ static BOOL hasFacesAsset(ALAsset *asset) {
         [self willChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForAllPhotos))];
         _numberOfPhotosToCheckForAllPhotos = numberOfPhotosToCheckForAllPhotos;
         [self didChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForAllPhotos))];
+        
+        if (_numberOfPhotosToCheckForAllPhotos == 0) {
+            [self doneEnumerating];
+        }
     }
 }
 
@@ -304,6 +308,10 @@ static BOOL hasFacesAsset(ALAsset *asset) {
         [self willChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForFaces))];
         _numberOfPhotosToCheckForFaces = numberOfPhotosToCheckForFaces;
         [self didChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForFaces))];
+        
+        if (_numberOfPhotosToCheckForFaces == 0) {
+            [self doneEnumerating];
+        }
     }
 }
 
@@ -312,6 +320,10 @@ static BOOL hasFacesAsset(ALAsset *asset) {
         [self willChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForScreenshots))];
         _numberOfPhotosToCheckForScreenshots = numberOfPhotosToCheckForScreenshots;
         [self didChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForScreenshots))];
+        
+        if (_numberOfPhotosToCheckForScreenshots == 0) {
+            [self doneEnumerating];
+        }
     }
 }
 
@@ -320,6 +332,17 @@ static BOOL hasFacesAsset(ALAsset *asset) {
         [self willChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForSelfies))];
         _numberOfPhotosToCheckForSelfies = numberOfPhotosToCheckForSelfies;
         [self didChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForSelfies))];
+        
+        if (_numberOfPhotosToCheckForSelfies == 0) {
+            [self doneEnumerating];
+        }
+    }
+}
+
+- (void)doneEnumerating {
+    if (_numberOfPhotosToCheckForAllPhotos == 0 && _numberOfPhotosToCheckForFaces == 0 && _numberOfPhotosToCheckForScreenshots == 0 && _numberOfPhotosToCheckForSelfies == 0) {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:NEW_DATABASE_DEFAULT_KEY];
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
 
