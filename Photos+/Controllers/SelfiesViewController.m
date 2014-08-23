@@ -24,12 +24,16 @@
 }
 
 - (NSString *)cachedQueryString {
-    return @"selfies = true && deleted = false";
+    return @"selfies = 1";
 }
 
 - (void)selfiesDidChangeNotification:(NSNotification *)notification {
     NSLog(@"selfies did change");
-    [self loadPhotos];
+    NSDictionary *userInfo = notification.userInfo;
+    if (userInfo[insertedAssetKey]) {
+        PhotoAsset *asset = [PhotoAsset firstInstanceWhere:@"url = ? order by assetIndex limit 1", userInfo[insertedAssetKey]];
+        [self insertPhotoAsset:asset];
+    }
 }
 
 - (NSString *)photosLibraryPropertyToObserve {

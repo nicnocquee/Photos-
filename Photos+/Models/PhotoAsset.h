@@ -8,13 +8,13 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
-@interface PhotoAsset : RLMObject
+@interface PhotoAsset : FCModel
+
+@property (nonatomic) int64_t id;
 
 @property (nonatomic, strong, readonly) UIImage *thumbnailImage;
 
 @property (nonatomic, strong, readonly) NSURL *url;
-
-@property (nonatomic, strong, readonly) NSString *urlString;
 
 @property (nonatomic, strong, readonly) NSDictionary *metadata;
 
@@ -32,7 +32,15 @@
 
 @property (nonatomic, assign) BOOL checkedForFaces;
 
-@property (nonatomic, assign) NSInteger index;
+@property (nonatomic, assign) NSInteger assetIndex;
+
+@property (nonatomic, strong) NSString *location;
+
+@property (nonatomic, strong) NSString *cameraType;
+
+@property (nonatomic, strong) NSDate *dateTaken;
+
+@property (nonatomic, strong) NSDate *dateCreated;
 
 @property (nonatomic, strong, readonly) ALAsset *rawAsset;
 

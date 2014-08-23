@@ -15,7 +15,13 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [self runCrashlyticsIfAvailable];
-    //[self deleteRealmFile];
+    
+    if (![self hasDatabase]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:NEW_DATABASE_DEFAULT_KEY];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    
+    [self loadDatabase];
     
     [[PhotosLibrary sharedLibrary] loadPhotos];
     NSLog(@"app delegate");
@@ -49,12 +55,57 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
-- (void)deleteRealmFile
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *path = [documentsDirectory stringByAppendingPathComponent:@"default.realm"];
-    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+- (void)loadDatabase {
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *dbPath = [documentsPath stringByAppendingPathComponent:@"photosplus.sqlite3"];
+    
+    [FCModel openDatabaseAtPath:dbPath withSchemaBuilder:^(FMDatabase *db, int *schemaVersion) {
+        [db beginTransaction];
+        
+        void (^failedAt)(int statement) = ^(int statement){
+            int lastErrorCode = db.lastErrorCode;
+            NSString *lastErrorMessage = db.lastErrorMessage;
+            [db rollback];
+            NSAssert3(0, @"Migration statement %d failed, code %d: %@", statement, lastErrorCode, lastErrorMessage);
+        };
+        
+        if (*schemaVersion < 1) {
+            if (![db executeUpdate:
+                  @"CREATE TABLE PhotoAsset ("
+                  @" id INTEGER PRIMARY KEY,"
+                  @" url TEXT NOT NULL DEFAULT '',"
+                  @" screenshot BOOL NOT NULL default false,"
+                  @" selfies BOOL NOT NULL default false,"
+                  @" hasFaces BOOL NOT NULL default false,"
+                  @" checkedForSelfies BOOL NOT NULL default false,"
+                  @" checkedForScreenshot BOOL NOT NULL default false,"
+                  @" checkedForFaces BOOL NOT NULL default false,"
+                  @" assetIndex INTEGER NOT NULL default 0,"
+                  @" location TEXT,"
+                  @" cameraType TEXT,"
+                  @" dateTaken REAL,"
+                  @" metadata BLOB,"
+                  @" dateCreated REAL"
+                  @")"
+                  ]) {
+                failedAt(1);
+            }
+            
+            if (![db executeUpdate:@"CREATE INDEX IF NOT EXISTS url on PhotoAsset (url)"]) {
+                failedAt(1);
+            }
+            
+            *schemaVersion = 1;
+        }
+        
+        [db commit];
+    }];
+}
+
+- (BOOL)hasDatabase {
+    NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *dbPath = [documentsPath stringByAppendingPathComponent:@"photosplus.sqlite3"];
+    return [[NSFileManager defaultManager] fileExistsAtPath:dbPath];
 }
 
 @end

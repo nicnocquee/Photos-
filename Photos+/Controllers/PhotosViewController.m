@@ -14,6 +14,8 @@
 
 #import "PhotoAsset.h"
 
+#import "FacesViewController.h"
+
 static void * photosToCheckKVO = &photosToCheckKVO;
 
 @interface PhotosViewController () <UICollectionViewDataSource>
@@ -85,26 +87,60 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     }
     
     if ([self cachedQueryString]) {
-        RLMRealm *realm = [RLMRealm defaultRealm];
-        RLMArray *array = [PhotoAsset objectsInRealm:realm where:[self cachedQueryString]];
-        for (PhotoAsset *asset in array) {
-            [self.assets addObject:asset];
-        }
+        NSArray *photos = [PhotoAsset instancesWhere:[NSString stringWithFormat:@"%@ order by dateCreated desc", [self cachedQueryString]]];
+        [self.assets addObjectsFromArray:photos];
         [self setTitle:[NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count]];
     } else {
         [self.assets removeAllObjects];
-        RLMArray *photos = [PhotoAsset allObjectsInRealm:[RLMRealm defaultRealm]];
-        for (PhotoAsset *asset in photos) {
-            [self.assets addObject:asset];
-        }
+        NSArray *photos = [PhotoAsset instancesOrderedBy:@"dateCreated DESC"];
+        [self.assets addObjectsFromArray:photos];
         NSLog(@"number of assets: %d", (int)self.assets.count);
     }
+    [self setTitle:[NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count]];
+    
     [self.collectionView reloadData];
-    [self.collectionView layoutIfNeeded];
     
     if (shouldScrollToLastItem && self.assets.count > 0) {
+        [self.collectionView layoutIfNeeded];
         [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.assets.count-1 inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     }
+}
+
+- (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset {
+    NSInteger indexToInsert = 0;
+    NSInteger index = [self.assets indexOfObject:photoAsset];
+    if (index != NSNotFound) {
+        //NSLog(@"inserted asset exists, ignore");
+        indexToInsert = NSNotFound;
+    } else {
+        //NSLog(@"to insert asset index %d", (int)photoAsset.assetIndex);
+        NSArray *assets = [self.assets.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"assetIndex > %d", (int)photoAsset.assetIndex]];
+        if (assets.count > 0) {
+            assets = [assets sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"assetIndex" ascending:NO]]];
+            PhotoAsset *nextAsset = [assets lastObject];
+            NSAssert(nextAsset, @"Next asset should not be nil");   
+            //NSLog(@"last asset index %d", (int)nextAsset.assetIndex);
+            NSInteger indexInAssets = [self.assets indexOfObject:nextAsset];
+            NSInteger insertIndex = MIN(indexInAssets+1, self.assets.count);
+            [self.assets insertObject:photoAsset atIndex:insertIndex];
+            indexToInsert = insertIndex;
+        } else {
+            [self.assets insertObject:photoAsset atIndex:0];
+        }
+    }
+    [self.collectionView reloadData];
+    
+    if (indexToInsert != NSNotFound) {
+        if (!self.collectionView.isDecelerating && !self.collectionView.isDragging) {
+            [self.collectionView layoutIfNeeded];
+            [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:indexToInsert inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+        }
+    }
+    return indexToInsert;
+}
+
+- (void)removePhotoAsset:(PhotoAsset *)photoAsset {
+    
 }
 
 - (NSString *)cachedQueryString {
@@ -112,31 +148,33 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (void)setTitleForProgress:(NSNumber *)prog {
-    float progress = [prog floatValue];
-    if (progress >= 100) {
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:NEW_DATABASE_DEFAULT_KEY]) {
         [self.navigationItem setTitleView:nil];
         self.navigationItem.title = [NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count];
     } else {
-        NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing photos %.f%%", nil), progress];
-        NSString *title = [self title];
-        if (self.assets.count > 0) {
-            title = [title stringByAppendingString:[NSString stringWithFormat:@" (%d)", (int)self.assets.count]];
-        }
-        NSString *text = [NSString stringWithFormat:@"%@\n%@", title, progressString];
-        NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
-        [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:title]];
-        [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
-        
-        UILabel *label = (UILabel *)self.navigationItem.titleView;
-        if (!label || label.tag == 1200) {
-            label = [[UILabel alloc] init];
+        float progress = [prog floatValue];
+        if (progress >= 100) {
+            [self.navigationItem setTitleView:nil];
+            self.navigationItem.title = [NSString stringWithFormat:@"%@ (%d)", [self title], (int)self.assets.count];
+        } else {
+            NSString *progressString = [NSString stringWithFormat:NSLocalizedString(@"Analyzing photos %.f%%", nil), progress];
+            NSString *title = [self title];
+            if (self.assets.count > 0) {
+                title = [title stringByAppendingString:[NSString stringWithFormat:@" (%d)", (int)self.assets.count]];
+            }
+            NSString *text = [NSString stringWithFormat:@"%@\n%@", title, progressString];
+            NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
+            [attr addAttribute:NSFontAttributeName value:[UIFont boldSystemFontOfSize:17] range:[text rangeOfString:title]];
+            [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:[text rangeOfString:progressString]];
+            
+            UILabel *label = [[UILabel alloc] init];
             [label setNumberOfLines:2];
             label.tag = 1200;
             [label setTextAlignment:NSTextAlignmentCenter];
             [self.navigationItem setTitleView:label];
+            [label setAttributedText:attr];
+            [label sizeToFit];
         }
-        [label setAttributedText:attr];
-        [label sizeToFit];
     }
 }
 
@@ -186,7 +224,6 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 #pragma mark - Notifications
 
 - (void)photosLibraryDidChangeNotification:(NSNotification *)notification {
-    NSLog(@"photos library did change");
     [self loadPhotos];
 }
 
