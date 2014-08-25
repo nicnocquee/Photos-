@@ -17,8 +17,7 @@
 @implementation ScreenshotsViewController
 
 - (void)setupNotifications {
-    NSLog(@"setup notification in sccreenhsots vc");
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(screenshotsDidChangeNotification:) name:screenshotsUpdatedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(photosLibraryDidChangeNotification:) name:screenshotsUpdatedNotification object:nil];
 }
 
 - (NSString *)title {
@@ -27,15 +26,6 @@
 
 - (NSString *)cachedQueryString {
     return @"screenshot = 1";
-}
-
-- (void)screenshotsDidChangeNotification:(NSNotification *)notification {
-    NSLog(@"screenshots did change");
-    NSDictionary *userInfo = notification.userInfo;
-    if (userInfo[insertedAssetKey]) {
-        PhotoAsset *asset = [PhotoAsset firstInstanceWhere:@"url = ? order by assetIndex limit 1", userInfo[insertedAssetKey]];
-        [self insertPhotoAsset:asset];
-    }
 }
 
 - (NSString *)photosLibraryPropertyToObserve {

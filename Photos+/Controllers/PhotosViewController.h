@@ -34,4 +34,6 @@
 
 - (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset;
 
+- (void)photosLibraryDidChangeNotification:(NSNotification *)notification;
+
 @end

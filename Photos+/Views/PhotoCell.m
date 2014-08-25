@@ -27,7 +27,7 @@
         self.cellView = cellView;
         NSDictionary *dict = @{@"cellView": self.cellView};
         [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[cellView]-0-|" options:0 metrics:nil views:dict]];
-        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[cellView]-0-|" options:0 metrics:nil views:dict]];
+        [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[cellView]-0-|" options:0 metrics:nil views:dict]];        
     }
     return self;
 }

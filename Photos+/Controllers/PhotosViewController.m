@@ -14,8 +14,6 @@
 
 #import "PhotoAsset.h"
 
-#import "FacesViewController.h"
-
 static void * photosToCheckKVO = &photosToCheckKVO;
 
 @interface PhotosViewController () <UICollectionViewDataSource>
@@ -52,6 +50,8 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    
     self.title = [self title];
     
     self.collectionViewDelegate = [[PhotosViewControllerCollectionViewDelegate alloc] initWithCollectionView:self.collectionView];
@@ -74,18 +74,6 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (void)loadPhotos {
-    BOOL shouldScrollToLastItem = NO;
-    
-    CGPoint offset = self.collectionView.contentOffset;
-    CGRect bounds = self.collectionView.bounds;
-    UIEdgeInsets inset = self.collectionView.contentInset;
-    CGSize size = self.collectionView.contentSize;
-    float y = offset.y + bounds.size.height + inset.bottom;
-    float h = size.height;
-    if (y >= h  && h > 44) {
-        shouldScrollToLastItem = YES;
-    }
-    
     if ([self cachedQueryString]) {
         NSArray *photos = [PhotoAsset instancesWhere:[NSString stringWithFormat:@"%@ order by dateCreated desc", [self cachedQueryString]]];
         [self.assets addObjectsFromArray:photos];
@@ -100,17 +88,24 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     
     [self.collectionView reloadData];
     
-    if (shouldScrollToLastItem && self.assets.count > 0) {
-        [self.collectionView layoutIfNeeded];
-        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.assets.count-1 inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+    if (self.assets.count > 0) {
+        for (PhotoAsset *photoAsset in self.assets) {
+            [[[PhotosLibrary sharedLibrary] library] assetForURL:photoAsset.url resultBlock:^(ALAsset *asset) {
+                if (!asset) {
+                    [[PhotosLibrary sharedLibrary] removeAssetWithURL:photoAsset.url];
+                }
+            } failureBlock:^(NSError *error) {
+                
+            }];
+        }
     }
+    
 }
 
 - (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset {
     NSInteger indexToInsert = 0;
     NSInteger index = [self.assets indexOfObject:photoAsset];
     NSInteger count = self.assets.count;
-    
     if (index != NSNotFound) {
         //NSLog(@"inserted asset exists, ignore");
         indexToInsert = NSNotFound;
@@ -138,7 +133,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (void)removePhotoAsset:(PhotoAsset *)photoAsset {
-    
+    NSLog(@"[%@] Removing asset url: %@", NSStringFromClass(self.class), photoAsset.url);
 }
 
 - (NSString *)cachedQueryString {
@@ -227,6 +222,26 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         PhotoAsset *asset = [PhotoAsset firstInstanceWhere:@"url = ? order by assetIndex limit 1", userInfo[insertedAssetKey]];
         [self insertPhotoAsset:asset];
     }
+    if (userInfo[deletedAssetKey]) {
+        NSURL *url = userInfo[deletedAssetKey];
+        NSInteger index = [self.assets indexOfObjectPassingTest:^BOOL(PhotoAsset *obj, NSUInteger idx, BOOL *stop) {
+            if (obj.url == url) {
+                *stop = YES;
+                return YES;
+            }
+            return NO;
+        }];
+        if (index != NSNotFound) {
+            [self.assets removeObjectAtIndex:index];
+            [self.collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:index inSection:0]]];
+        }
+    }
+}
+
+- (void)willEnterForeground:(NSNotification *)notification {
+    NSLog(@"%@ did become active", NSStringFromClass(self.class));
+    
+    [[PhotosLibrary sharedLibrary] checkAssetsExist];
 }
 
 #pragma mark - KVO

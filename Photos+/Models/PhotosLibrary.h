@@ -44,4 +44,8 @@ extern NSString *deletedAssetKey;
 
 - (void)loadPhotos;
 
+- (void)removeAssetWithURL:(NSURL *)url;
+
+- (void)checkAssetsExist;
+
 @end

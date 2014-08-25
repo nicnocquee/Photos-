@@ -102,6 +102,10 @@ static BOOL hasFacesAsset(ALAsset *asset) {
 
 @property (nonatomic, assign) BOOL loadingPhotos;
 
+@property (nonatomic, assign) BOOL isCheckingExists;
+
+@property (nonatomic, assign) NSInteger numberOfAssetsCheckingExist;
+
 @end
 
 @implementation PhotosLibrary
@@ -261,6 +265,9 @@ static BOOL hasFacesAsset(ALAsset *asset) {
             NSArray *updatedAssets = userInfo[ALAssetLibraryUpdatedAssetsKey];
             for (NSURL *updatedAsset in updatedAssets) {
                 [self.library assetForURL:updatedAsset resultBlock:^(ALAsset *asset) {
+                    if (!asset) {
+                        [self removeAssetWithURL:updatedAsset];
+                    }
                     NSLog(@"here");
                 } failureBlock:^(NSError *error) {
                     NSLog(@"error: %@", error);
@@ -268,11 +275,59 @@ static BOOL hasFacesAsset(ALAsset *asset) {
             }
         } else {
             // empty dictionary no need to do anything
+            [self checkAssetsExist];
         }
     } else {
         // need to reload all assets
+        [self checkAssetsExist];
     }
     [self loadPhotos];
+}
+
+- (void)checkAssetsExist {
+    if (!self.isCheckingExists) {
+        self.numberOfAssetsCheckingExist = self.photos.count;
+        self.isCheckingExists = YES;
+        for (PhotoAsset *photoAsset in self.photos) {
+            [self.library assetForURL:photoAsset.url resultBlock:^(ALAsset *asset) {
+                self.numberOfAssetsCheckingExist--;
+                if (self.numberOfAssetsCheckingExist == 0) {
+                    self.isCheckingExists = NO;
+                }
+                if (!asset) {
+                    [self removeAssetWithURL:photoAsset.url];
+                }
+            } failureBlock:^(NSError *error) {
+                
+            }];
+        }
+    }
+}
+
+- (void)removeAssetWithURL:(NSURL *)url {
+    NSLog(@"Removing asset with url %@", url);
+    PhotoAsset *photoAsset = [PhotoAsset firstInstanceWhere:@"url = ? order by assetIndex limit 1", url];
+    BOOL hasFaces = photoAsset.hasFaces;
+    BOOL isScreenshot = photoAsset.isScreenshot;
+    BOOL isSelfie = photoAsset.isSelfies;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [PhotoAsset executeUpdateQuery:@"delete from $T where url = ?", url];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:photosUpdatedNotification object:nil userInfo:@{deletedAssetKey: url}];
+            if (hasFaces) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:facesUpdatedNotification object:nil userInfo:@{deletedAssetKey: url}];
+            }
+            if (isScreenshot) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:screenshotsUpdatedNotification object:nil userInfo:@{deletedAssetKey: url}];
+            }
+            if (isSelfie) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:selfiesUpdatedNotification object:nil userInfo:@{deletedAssetKey: url}];
+            }
+        });
+    });
+    
 }
 
 - (void)setNumberOfPhotos:(NSInteger)numberOfPhotos {
@@ -294,7 +349,7 @@ static BOOL hasFacesAsset(ALAsset *asset) {
 - (void)setNumberOfPhotosToCheckForAllPhotos:(NSInteger)numberOfPhotosToCheckForAllPhotos {
     if (_numberOfPhotosToCheckForAllPhotos != numberOfPhotosToCheckForAllPhotos) {
         [self willChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForAllPhotos))];
-        _numberOfPhotosToCheckForAllPhotos = numberOfPhotosToCheckForAllPhotos;
+        _numberOfPhotosToCheckForAllPhotos = MAX(numberOfPhotosToCheckForAllPhotos, 0);
         [self didChangeValueForKey:NSStringFromSelector(@selector(numberOfPhotosToCheckForAllPhotos))];
         
         if (_numberOfPhotosToCheckForAllPhotos == 0) {
