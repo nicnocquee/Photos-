@@ -47,6 +47,17 @@
     return self;
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    [self.thisImageview setImage:nil];
+    [self.thisImageview setFrame:CGRectZero];
+    [self.scrollView setZoomScale:1];
+    [self.scrollView setMinimumZoomScale:1];
+    [self.scrollView setMaximumZoomScale:1];
+    [self.scrollView setContentSize:CGSizeZero];
+}
+
 - (void)setup {
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.contentView.bounds];
     [self.scrollView setBackgroundColor:[UIColor clearColor]];
@@ -82,9 +93,15 @@
     
     self.scrollView.minimumZoomScale = ({
         CGRect scrollViewFrame = self.scrollView.frame;
-        CGFloat scaleWidth = scrollViewFrame.size.width / self.scrollView.contentSize.width;
-        CGFloat scaleHeight = scrollViewFrame.size.height / self.scrollView.contentSize.height;
-        CGFloat minScale = MIN(scaleWidth, scaleHeight);
+        CGFloat minScale;
+        if ((scrollViewFrame.size.width > size.width) && (scrollViewFrame.size.height > size.height)) {
+            minScale = 1;
+        } else {
+            CGFloat scaleWidth = scrollViewFrame.size.width / self.scrollView.contentSize.width;
+            CGFloat scaleHeight = scrollViewFrame.size.height / self.scrollView.contentSize.height;
+            minScale = MIN(scaleWidth, scaleHeight);
+        }
+        
         minScale;
     });
     
@@ -205,8 +222,8 @@
 - (void)setItem:(id)item {
     PhotoAsset *photo = (PhotoAsset *)item;
     UIImage *image = [UIImage imageWithCGImage:photo.rawAsset.defaultRepresentation.fullScreenImage];
-    [self setImageSize:CGSizeMake(image.size.width, image.size.height)];
     [self.thisImageview setImage:image];
+    [self setImageSize:CGSizeMake(image.size.width, image.size.height)];
 }
 
 - (UIImageView *)grayImageView {
