@@ -57,7 +57,8 @@
                                 @[NSLocalizedString(@"Focal Length", nil), metadataPath, (NSString *)kCGImagePropertyExifFocalLength],
                                 @[NSLocalizedString(@"ISO Time", nil),  metadataPath, (NSString *)kCGImagePropertyExifISOSpeedRatings],
                                 @[NSLocalizedString(@"Dimension", nil), NSStringFromSelector(@selector(dimensionString))],
-                                @[NSLocalizedString(@"Date Taken", nil), metadataPath, (NSString *)kCGImagePropertyExifDateTimeOriginal],
+                                @[NSLocalizedString(@"Date Taken", nil), NSStringFromSelector(@selector(dateTakenString))],
+                                @[NSLocalizedString(@"Date Created", nil), NSStringFromSelector(@selector(dateCreatedString))],
                                 @[NSLocalizedString(@"Location", nil), NSStringFromSelector(@selector(latitudeLongitudeString))],
                                 @[NSLocalizedString(@"Location Name", nil), [NSNull null]]
                                    ];

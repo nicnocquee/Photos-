@@ -81,6 +81,14 @@
     return [NSString stringWithFormat:@"%.0fx%.0f", self.rawAsset.defaultRepresentation.dimensions.width, self.rawAsset.defaultRepresentation.dimensions.height];
 }
 
+- (NSString *)dateTakenString {
+    return self.metadata[(NSString *)kCGImagePropertyExifDictionary][(NSString *)kCGImagePropertyExifDateTimeOriginal];
+}
+
+- (NSString *)dateCreatedString {
+    return [NSString stringWithFormat:@"%@", self.dateCreated];
+}
+
 + (NSArray *)ignoredProperties {
     return @[NSStringFromSelector(@selector(thumbnailImage)),
              NSStringFromSelector(@selector(assetRepresentation)),

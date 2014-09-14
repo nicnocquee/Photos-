@@ -54,6 +54,10 @@
 
 @property (nonatomic, strong, readonly) NSString *dimensionString;
 
+@property (nonatomic, strong, readonly) NSString *dateTakenString;
+
+@property (nonatomic, strong, readonly) NSString *dateCreatedString;
+
 - (void)setALAsset:(ALAsset *)asset;
 
 - (void)loadAssetWithCompletion:(void(^)(id asset))completion;
