@@ -204,10 +204,9 @@
 
 - (void)setItem:(id)item {
     PhotoAsset *photo = (PhotoAsset *)item;
-    CGFloat width = photo.rawAsset.defaultRepresentation.dimensions.width;
-    CGFloat height = photo.rawAsset.defaultRepresentation.dimensions.height;
-    [self setImageSize:CGSizeMake(width, height)];
-    [self.thisImageview setImage:[UIImage imageWithCGImage:photo.rawAsset.defaultRepresentation.fullScreenImage]];
+    UIImage *image = [UIImage imageWithCGImage:photo.rawAsset.defaultRepresentation.fullScreenImage];
+    [self setImageSize:CGSizeMake(image.size.width, image.size.height)];
+    [self.thisImageview setImage:image];
 }
 
 - (UIImageView *)grayImageView {

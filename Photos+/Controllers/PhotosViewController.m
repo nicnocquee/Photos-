@@ -50,6 +50,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 - (void)awakeFromNib {
     self.navigationController.tabBarItem.title = [self tabBarItemTitle];
     self.navigationController.tabBarItem.image = [self tabBarItemImage];
+    
 }
 
 - (void)viewDidLoad
@@ -67,6 +68,8 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     self.assets = [[NSMutableOrderedSet alloc] init];
     
     [self loadPhotos];
+    
+    [self setHidesBottomBarWhenPushed:YES];
 }
 
 - (void)initObservers {
@@ -254,7 +257,8 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     
     PhotosHorizontalViewController *horizontalPhotos = [[PhotosHorizontalViewController alloc] init];
     [horizontalPhotos setIndexOfPhotoToShowOnLoad:indexPath.item];
-    [horizontalPhotos setPhotos:self.assets];
+    [horizontalPhotos setPhotos:self.assets.array];
+    
     [self.navigationController pushViewController:horizontalPhotos animated:YES];
 }
 

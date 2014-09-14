@@ -24,17 +24,20 @@
     self = [super init];
     if (self) {
         self.photos = photos;
-    }
+           }
     return self;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self setAutomaticallyAdjustsScrollViewInsets:NO];
     
     [self.collectionView registerClass:[PhotoZoomableCell class] forCellWithReuseIdentifier:NSStringFromClass([PhotoZoomableCell class])];
     
-    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.indexOfPhotoToShowOnLoad inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.indexOfPhotoToShowOnLoad inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
+    
+    [self.collectionView setContentInset:UIEdgeInsetsZero];
 }
 
 - (void)didReceiveMemoryWarning
@@ -83,7 +86,7 @@
     }
     
     CGSize size = self.view.frame.size;
-    self.itemSize = [NSValue valueWithCGSize:size];
+    self.itemSize = [NSValue valueWithCGSize:CGSizeMake(size.width, CGRectGetHeight(self.collectionView.frame))];
     return size;
 }
 
@@ -93,6 +96,10 @@
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return CELL_SPACING;
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    return UIEdgeInsetsZero;
 }
 
 #pragma mark - CustomAnimationTransitionFromViewControllerDelegate
