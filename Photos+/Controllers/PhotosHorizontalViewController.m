@@ -51,7 +51,7 @@
 {
     [super viewDidLoad];
     [self setAutomaticallyAdjustsScrollViewInsets:NO];
-    [self.collectionView setContentInset:UIEdgeInsetsZero];
+    [self.collectionView setContentInset:UIEdgeInsetsMake(0, 0, 0, CELL_SPACING)];
     [self.collectionView registerClass:[PhotoZoomableCell class] forCellWithReuseIdentifier:NSStringFromClass([PhotoZoomableCell class])];
     [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.firstShownPhotoIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
     [self.collectionView setBackgroundColor:[UIColor clearColor]];
@@ -302,7 +302,8 @@
     [gradientView setAlpha:0];
     
     PhotoInfoViewController *photoInfo = [[PhotoInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    [photoInfo setPhoto:[[self currentCell] item]];
+    PhotoAsset *photo = [[self currentCell] item];
+    [photoInfo setPhoto:photo];
     [photoInfo setDelegate:self];
     [photoInfo willMoveToParentViewController:self];
     [self addChildViewController:photoInfo];

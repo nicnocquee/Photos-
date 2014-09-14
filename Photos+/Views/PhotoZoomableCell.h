@@ -25,7 +25,6 @@
 @property (nonatomic, assign, getter = isClosingViewController) BOOL closingViewController;
 @property (nonatomic, strong) id item;
 
-- (UIImage *)originalImage;
 - (void)doTeasingGesture;
 
 - (void)setZoomScale:(CGFloat)zoomScale;
