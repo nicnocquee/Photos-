@@ -12,13 +12,15 @@
 
 #import "UIViewController+Additionals.h"
 
+#import "UIView+Additionals.h"
+
 #import <objc/runtime.h>
 
 #define CELL_SPACING 20
 #define PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO @"photobox.PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO"
 
 
-@interface PhotosHorizontalViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate> {
+@interface PhotosHorizontalViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, PhotoZoomableCellDelegate> {
     BOOL shouldHideNavigationBar;
 }
 
@@ -50,6 +52,7 @@
     [self.collectionView setContentInset:UIEdgeInsetsZero];
     [self.collectionView registerClass:[PhotoZoomableCell class] forCellWithReuseIdentifier:NSStringFromClass([PhotoZoomableCell class])];
     [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.firstShownPhotoIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
+    [self.collectionView setBackgroundColor:[UIColor clearColor]];
     
     UITapGestureRecognizer *tapOnce = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnce:)];
     [tapOnce setDelegate:self];
@@ -59,6 +62,10 @@
     self.darkBackgroundView = [[UIView alloc] initWithFrame:self.view.frame];
     [self.darkBackgroundView setBackgroundColor:[UIColor colorWithWhite:1 alpha:1]];
     [self.collectionView setBackgroundView:self.darkBackgroundView];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self insertBackgroundSnapshotView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -166,6 +173,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PhotoZoomableCell *cell = (PhotoZoomableCell *)[self.collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([PhotoZoomableCell class]) forIndexPath:indexPath];
     [cell setItem:self.photos[indexPath.item]];
+    [cell setDelegate:self];
     return cell;
 }
 
@@ -208,7 +216,6 @@
         self.previousPage = page;
         if (!self.justOpened) {
             if (self.delegate && [self.delegate respondsToSelector:@selector(photosHorizontalScrollingViewController:didChangePage:item:)]) {
-                //NSManagedObject *photo = [self.dataSource managedObjectItemAtIndexPath:[NSIndexPath indexPathForItem:page inSection:0]];
                 id photo = [self.photos objectAtIndex:page];
                 [self.delegate photosHorizontalScrollingViewController:self didChangePage:page item:photo];
             }
@@ -252,12 +259,28 @@
 
 - (CGRect)startRectInContainerView:(UIView *)view {
     PhotoZoomableCell *cell = [self currentCell];
-    return cell.thisImageview.frame;
+    return [cell.thisImageview convertFrameRectToView:view];
 }
 
 - (CGRect)endRectInContainerView:(UIView *)view {
     return CGRectZero;
 }
 
+#pragma mark - Zoomable Cell delegate
+
+- (void)didCancelClosingPhotosHorizontalViewController {
+    
+}
+
+- (void)didClosePhotosHorizontalViewController{
+    [[self currentCell] setClosingViewController:YES];
+    [self.delegate photosHorizontalWillClose];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)didDragDownWithPercentage:(float)progress {
+    CGFloat alpha = MIN(1-progress+0.3, 1);
+    [self.darkBackgroundView setAlpha:alpha];
+}
 
 @end

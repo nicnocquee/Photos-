@@ -20,6 +20,8 @@
 
 #import "UIView+Additionals.h"
 
+#import "UIViewController+Additionals.h"
+
 static void * photosToCheckKVO = &photosToCheckKVO;
 
 @interface PhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, CustomAnimationTransitionFromViewControllerDelegate, PhotosHorizontalViewControllerDelegate>
@@ -394,7 +396,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (void)photosHorizontalWillClose {
-    //[self setNavigationBarHidden:NO animated:YES];
+    [self setNavigationBarHidden:NO animated:YES];
 }
 
 @end

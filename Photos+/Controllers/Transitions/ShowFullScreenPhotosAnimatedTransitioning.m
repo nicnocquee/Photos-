@@ -125,6 +125,7 @@
     // remove the image view from scroll view then move it to containerView
     [viewToAnimate removeFromSuperview];
     [containerView addSubview:viewToAnimate];
+    [viewToAnimate setBackgroundColor:[UIColor redColor]];
     
     // set the frame of the image view in container's view coordinate
     [viewToAnimate setFrame:inContainerViewRect];

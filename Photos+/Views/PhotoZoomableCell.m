@@ -142,27 +142,30 @@
 }
 
 - (void)centerScrollViewContents {
-    CGSize boundsSize = self.scrollView.bounds.size;
-    CGRect contentsFrame = self.thisImageview.frame;
-    
-    if (contentsFrame.size.width < boundsSize.width) {
-        contentsFrame.origin.x = (boundsSize.width - contentsFrame.size.width) / 2.0f;
-    } else {
-        contentsFrame.origin.x = 0.0f;
+    if (!self.isClosingViewController) {
+        CGSize boundsSize = self.scrollView.bounds.size;
+        CGRect contentsFrame = self.thisImageview.frame;
+        
+        if (contentsFrame.size.width < boundsSize.width) {
+            contentsFrame.origin.x = (boundsSize.width - contentsFrame.size.width) / 2.0f;
+        } else {
+            contentsFrame.origin.x = 0.0f;
+        }
+        
+        if (contentsFrame.size.height < boundsSize.height) {
+            contentsFrame.origin.y = (boundsSize.height - contentsFrame.size.height) / 2.0f;
+        } else {
+            contentsFrame.origin.y = 0.0f;
+        }
+        
+        self.thisImageview.frame = contentsFrame;
+        if (self.scrollView.zoomScale == self.scrollView.minimumZoomScale) {
+            [self.scrollView setDirectionalLockEnabled:YES];
+        } else {
+            [self.scrollView setDirectionalLockEnabled:NO];
+        }
     }
     
-    if (contentsFrame.size.height < boundsSize.height) {
-        contentsFrame.origin.y = (boundsSize.height - contentsFrame.size.height) / 2.0f;
-    } else {
-        contentsFrame.origin.y = 0.0f;
-    }
-    
-    self.thisImageview.frame = contentsFrame;
-    if (self.scrollView.zoomScale == self.scrollView.minimumZoomScale) {
-        [self.scrollView setDirectionalLockEnabled:YES];
-    } else {
-        [self.scrollView setDirectionalLockEnabled:NO];
-    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
