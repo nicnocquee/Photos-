@@ -19,9 +19,6 @@
                                   animationControllerForOperation:(UINavigationControllerOperation)operation
                                                fromViewController:(UIViewController *)fromVC
                                                  toViewController:(UIViewController *)toVC {
-    if (operation == UINavigationControllerOperationPop) {
-        return nil;
-    }
     ShowFullScreenPhotosAnimatedTransitioning *transitioning = [[ShowFullScreenPhotosAnimatedTransitioning alloc] init];
     transitioning.operation = operation;
     if (([fromVC isKindOfClass:[PhotosViewController class]] &&

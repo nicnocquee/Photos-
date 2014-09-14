@@ -10,6 +10,17 @@
 
 #import "ShowFullScreenPhotosAnimatedTransitioning.h"
 
+@class PhotosHorizontalViewController;
+
+@protocol PhotosHorizontalViewControllerDelegate <NSObject>
+
+- (void)photosHorizontalScrollingViewController:(PhotosHorizontalViewController *)viewController didChangePage:(NSInteger)page item:(id)item;
+- (UIView *)snapshotView;
+- (CGRect)selectedItemRectInSnapshot;
+- (void)photosHorizontalWillClose;
+
+@end
+
 @interface PhotosHorizontalViewController : UIViewController <CustomAnimationTransitionFromViewControllerDelegate>
 
 - (id)initWithPhotos:(NSArray *)photos;
@@ -18,6 +29,8 @@
 
 @property (nonatomic, copy) NSArray *photos;
 
-@property (nonatomic, assign) NSInteger indexOfPhotoToShowOnLoad;
+@property (nonatomic, assign) NSInteger firstShownPhotoIndex;
+
+@property (nonatomic, weak) id<PhotosHorizontalViewControllerDelegate>delegate;
 
 @end

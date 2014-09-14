@@ -22,7 +22,7 @@
 
 static void * photosToCheckKVO = &photosToCheckKVO;
 
-@interface PhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, CustomAnimationTransitionFromViewControllerDelegate>
+@interface PhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, CustomAnimationTransitionFromViewControllerDelegate, PhotosHorizontalViewControllerDelegate>
 
 @property (nonatomic, strong) NSValue *cellSize;
 
@@ -229,6 +229,11 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     return NSStringFromSelector(@selector(numberOfPhotosToCheckForAllPhotos));
 }
 
+- (void)setSelectedItemRectAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewLayoutAttributes *attributes = [self.collectionView.collectionViewLayout layoutAttributesForItemAtIndexPath:indexPath];
+    self.selectedItemRect = attributes.frame;
+}
+
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -275,9 +280,11 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     PhotoCell *cell = (PhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];
     self.selectedCell = cell;
     self.selectedAsset = self.assets[indexPath.item];
+    [self setSelectedItemRectAtIndexPath:indexPath];
     
     PhotosHorizontalViewController *horizontalPhotos = [[PhotosHorizontalViewController alloc] init];
-    [horizontalPhotos setIndexOfPhotoToShowOnLoad:indexPath.item];
+    [horizontalPhotos setFirstShownPhotoIndex:indexPath.item];
+    [horizontalPhotos setDelegate:self];
     [horizontalPhotos setPhotos:self.assets.array];
     
     [self.navigationController pushViewController:horizontalPhotos animated:YES];
@@ -361,6 +368,33 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 
 - (UIView *)viewToAnimate {
     return nil;
+}
+
+#pragma mark - PhotosHorizontalViewControllerDelegate
+
+- (void)photosHorizontalScrollingViewController:(PhotosHorizontalViewController *)viewController didChangePage:(NSInteger)page item:(id)item {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:[self.assets indexOfObject:item] inSection:0];
+    if (indexPath) {
+        
+        if (indexPath.section < [self.collectionView numberOfSections]) {
+            [self setSelectedItemRectAtIndexPath:indexPath];
+            
+            [self.collectionView scrollRectToVisible:self.selectedItemRect animated:NO];
+        }
+    }
+    
+}
+
+- (UIView *)snapshotView {
+    return [self.view snapshotViewAfterScreenUpdates:YES];
+}
+
+- (CGRect)selectedItemRectInSnapshot {
+    return [self endRectInContainerView:nil];
+}
+
+- (void)photosHorizontalWillClose {
+    //[self setNavigationBarHidden:NO animated:YES];
 }
 
 @end

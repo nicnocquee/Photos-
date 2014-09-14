@@ -15,12 +15,21 @@
 #import <objc/runtime.h>
 
 #define CELL_SPACING 20
+#define PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO @"photobox.PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO"
 
-@interface PhotosHorizontalViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
+
+@interface PhotosHorizontalViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate> {
+    BOOL shouldHideNavigationBar;
+}
 
 @property (nonatomic, strong) NSValue *itemSize;
 
 @property (nonatomic, strong) UIView *darkBackgroundView;
+
+@property (nonatomic, assign) NSInteger previousPage;
+@property (nonatomic, assign) BOOL justOpened;
+@property (nonatomic, strong) UIView *backgroundViewControllerView;
+@property (nonatomic, strong) UIView *photoInfoBackgroundGradientView;
 
 @end
 
@@ -40,7 +49,7 @@
     [self setAutomaticallyAdjustsScrollViewInsets:NO];
     [self.collectionView setContentInset:UIEdgeInsetsZero];
     [self.collectionView registerClass:[PhotoZoomableCell class] forCellWithReuseIdentifier:NSStringFromClass([PhotoZoomableCell class])];
-    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.indexOfPhotoToShowOnLoad inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.firstShownPhotoIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionLeft animated:NO];
     
     UITapGestureRecognizer *tapOnce = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnce:)];
     [tapOnce setDelegate:self];
@@ -70,6 +79,36 @@
         [self.view addSubview:_collectionView];
     }
     return _collectionView;
+}
+
+- (NSInteger)currentCollectionViewPage:(UIScrollView *)scrollView{
+    if (self.justOpened) {
+        return self.firstShownPhotoIndex;
+    }
+    CGFloat pageWidth = scrollView.frame.size.width;
+    float fractionalPage = scrollView.contentOffset.x / pageWidth;
+    NSInteger page = lround(fractionalPage);
+    self.firstShownPhotoIndex = page;
+    return page;
+}
+
+- (void)insertBackgroundSnapshotView {
+    if (self.backgroundViewControllerView) {
+        [self.backgroundViewControllerView removeFromSuperview];
+    }
+    UIView *bgView = [self.delegate snapshotView];
+    self.backgroundViewControllerView = bgView;
+    [self.backgroundViewControllerView setBackgroundColor:[UIColor whiteColor]];
+    CGRect frame = ({
+        CGRect frame = self.backgroundViewControllerView.frame;
+        frame.origin = self.collectionView.frame.origin;
+        frame;
+    });
+    [self.backgroundViewControllerView setFrame:frame];
+    UIView *whiteView = [[UIView alloc] initWithFrame:[self.delegate selectedItemRectInSnapshot]];
+    [whiteView setBackgroundColor:[UIColor whiteColor]];
+    [self.backgroundViewControllerView addSubview:whiteView];
+    [self.collectionView.superview insertSubview:self.backgroundViewControllerView belowSubview:self.collectionView];
 }
 
 #pragma mark - Tap and Gesture
@@ -154,6 +193,71 @@
     return UIEdgeInsetsZero;
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    NSInteger page = [self currentCollectionViewPage:scrollView];
+    if (self.previousPage != page) {
+        if (!shouldHideNavigationBar) {
+            [self hideNavigationBar];
+            [self darkenBackground];
+        } else {
+            shouldHideNavigationBar = NO;
+        }
+        
+        self.previousPage = page;
+        if (!self.justOpened) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(photosHorizontalScrollingViewController:didChangePage:item:)]) {
+                //NSManagedObject *photo = [self.dataSource managedObjectItemAtIndexPath:[NSIndexPath indexPathForItem:page inSection:0]];
+                id photo = [self.photos objectAtIndex:page];
+                [self.delegate photosHorizontalScrollingViewController:self didChangePage:page item:photo];
+            }
+            [self insertBackgroundSnapshotView];
+        } else {
+            self.justOpened = NO;
+            [self showHintIfNeeded];
+        }
+    }
+}
+
+#pragma mark - Hint
+
+- (void)showHintIfNeeded {
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO]) {
+        PhotoZoomableCell *currentCell = [self currentCell];
+        if (currentCell) {
+            [currentCell doTeasingGesture];
+        }
+    }
+}
+
 #pragma mark - CustomAnimationTransitionFromViewControllerDelegate
+
+
+- (PhotoZoomableCell *)currentCell {
+    return [[self.collectionView visibleCells] firstObject];
+}
+
+- (UIView *)viewToAnimate {
+    return [self currentCell].thisImageview;
+}
+
+- (UIImage *)imageToAnimate {
+    return nil;
+}
+
+- (CGSize)actualImageSize {
+    return CGSizeZero;
+}
+
+- (CGRect)startRectInContainerView:(UIView *)view {
+    PhotoZoomableCell *cell = [self currentCell];
+    return cell.thisImageview.frame;
+}
+
+- (CGRect)endRectInContainerView:(UIView *)view {
+    return CGRectZero;
+}
+
 
 @end
