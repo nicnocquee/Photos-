@@ -71,6 +71,9 @@
 - (NSString *)latitudeLongitudeString {
     double latitude = [[self latitude] doubleValue];
     double longitude = [[self longitude] doubleValue];
+    if (latitude == 0 && longitude == 0) {
+        return @"";
+    }
     return [NSString stringWithFormat:@"%f, %f", latitude, longitude];
 }
 

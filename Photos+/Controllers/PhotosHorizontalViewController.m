@@ -318,4 +318,23 @@
     }];
 }
 
+#pragma mark - Photo Info View Controller
+
+- (void)photoInfoViewControllerDidClose:(PhotoInfoViewController *)photoInfo {
+    UIViewController *childVC = [self childViewControllers][0];
+    [childVC removeFromParentViewController];
+    [UIView animateWithDuration:0.5 animations:^{
+        [childVC.view setOriginY:CGRectGetHeight(self.collectionView.frame)];
+        [self.photoInfoBackgroundGradientView setAlpha:0];
+    } completion:^(BOOL finished) {
+        [childVC.view removeFromSuperview];
+        [self.photoInfoBackgroundGradientView removeFromSuperview];
+        [[self currentCell] setGrayscaleAndZoom:NO animated:YES];
+    }];
+}
+
+- (void)photoInfoViewController:(PhotoInfoViewController *)photoInfo didDragToClose:(CGFloat)progress {
+    [[[self currentCell] grayImageView] setAlpha:1-progress];
+}
+
 @end

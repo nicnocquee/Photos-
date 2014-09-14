@@ -163,6 +163,10 @@
         }
         value = val;
     }
+    
+    if (value.length == 0) {
+        value = NSLocalizedString(@"Not available", nil);
+    }
     [cell setText:cameraDataRow[0] detail:value];
 }
 
