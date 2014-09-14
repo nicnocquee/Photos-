@@ -64,7 +64,16 @@
     [self.imageViewToAnimate setContentMode:UIViewContentModeScaleAspectFill];
     [self.imageViewToAnimate setTag:ANIMATED_IMAGE_VIEW_ON_PUSH_TAG];
     [self.imageViewToAnimate setImage:image];
-    [self.imageViewToAnimate initToScaleAspectFitToFrame:CGRectMake(0, 0, CGRectGetWidth(containerView.frame), CGRectGetHeight(containerView.frame))];
+    CGSize actualImageSize = [fromVC actualImageSize];
+    CGRect toFrame = CGRectMake(0, 0, CGRectGetWidth(containerView.frame), CGRectGetHeight(containerView.frame));
+    if ((CGRectGetWidth(containerView.frame) > actualImageSize.width) && (CGRectGetHeight(containerView.frame) > actualImageSize.height)) {
+        toFrame.size = image.size;
+        CGFloat originX, originY;
+        originX = (CGRectGetWidth(containerView.frame) - toFrame.size.width)/2;
+        originY = (CGRectGetHeight(containerView.frame) - toFrame.size.height)/2;
+        toFrame.origin = CGPointMake(originX, originY);
+    }
+    [self.imageViewToAnimate initToScaleAspectFitToFrame:toFrame];
     
     [containerView addSubview:self.imageViewToAnimate];
     

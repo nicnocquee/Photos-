@@ -12,6 +12,7 @@
 
 - (UIImage *)imageToAnimate;
 - (CGRect)startRectInContainerView:(UIView *)view;
+- (CGSize)actualImageSize;
 - (CGRect)endRectInContainerView:(UIView *)view;
 - (UIView *)viewToAnimate;
 

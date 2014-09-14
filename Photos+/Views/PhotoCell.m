@@ -41,7 +41,13 @@
         _photoAsset = photoAsset;
         [self.cellView.imageView setImage:_photoAsset.thumbnailImage];
         [_photoAsset loadAssetWithCompletion:^(ALAsset *asset) {
-            if (asset) [self.cellView.imageView setImage:[UIImage imageWithCGImage:[asset thumbnail]]];
+            if (asset) {
+                CGImageRef image = [asset aspectRatioThumbnail];
+                if (image == NULL) {
+                    image = [asset thumbnail];
+                }
+                [self.cellView.imageView setImage:[UIImage imageWithCGImage:image]];
+            }
         }];
     }
 }

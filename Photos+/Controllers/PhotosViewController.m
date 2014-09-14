@@ -10,19 +10,33 @@
 
 #import "PhotoCell.h"
 
+#import "PhotoCellView.h"
+
 #import "PhotosHorizontalViewController.h"
 
 #import "PhotoAsset.h"
 
+#import "PhotosPlusNavigationControllerDelegate.h"
+
+#import "UIView+Additionals.h"
+
 static void * photosToCheckKVO = &photosToCheckKVO;
 
-@interface PhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
+@interface PhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, CustomAnimationTransitionFromViewControllerDelegate>
 
 @property (nonatomic, strong) NSValue *cellSize;
 
 @property (nonatomic, assign) int numberOfColumns;
 
 @property (nonatomic, assign) CGFloat cellSpacing;
+
+@property (nonatomic, strong) PhotosPlusNavigationControllerDelegate *navigationDelegate;
+
+@property (nonatomic, strong) PhotoCell *selectedCell;
+
+@property (nonatomic, strong) PhotoAsset *selectedAsset;
+
+@property (nonatomic, assign) CGRect selectedItemRect;
 
 @end
 
@@ -56,6 +70,9 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.navigationDelegate = [[PhotosPlusNavigationControllerDelegate alloc] init];
+    [self.navigationController setDelegate:self.navigationDelegate];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     
@@ -255,6 +272,10 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
+    PhotoCell *cell = (PhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    self.selectedCell = cell;
+    self.selectedAsset = self.assets[indexPath.item];
+    
     PhotosHorizontalViewController *horizontalPhotos = [[PhotosHorizontalViewController alloc] init];
     [horizontalPhotos setIndexOfPhotoToShowOnLoad:indexPath.item];
     [horizontalPhotos setPhotos:self.assets.array];
@@ -304,6 +325,42 @@ static void * photosToCheckKVO = &photosToCheckKVO;
             [self performSelectorOnMainThread:@selector(setTitleForProgress:) withObject:@(progress) waitUntilDone:YES];
         }
     }
+}
+
+#pragma mark - CustomAnimationTransitionFromViewControllerDelegate
+
+- (UIImage *)imageToAnimate {
+    if (self.selectedCell) {
+        return self.selectedCell.cellView.imageView.image;
+    }
+    return nil;
+}
+
+- (CGRect)startRectInContainerView:(UIView *)containerView {
+    if (self.selectedCell) {
+        return [self.selectedCell convertFrameRectToView:containerView];
+    }
+    return CGRectZero;
+}
+
+- (CGSize)actualImageSize {
+    ALAsset *asset = self.selectedAsset.rawAsset;
+    
+    return asset.defaultRepresentation.dimensions;
+}
+
+- (CGRect)endRectInContainerView:(UIView *)containerView {
+    if (self.selectedCell) {
+        CGRect originalPosition = CGRectOffset(self.selectedItemRect, 0, self.collectionView.contentInset.top);
+        CGFloat adjustment = self.collectionView.contentOffset.y + self.collectionView.contentInset.top;
+        return CGRectOffset(originalPosition, 0, -adjustment);
+    }
+    return CGRectZero;
+    
+}
+
+- (UIView *)viewToAnimate {
+    return nil;
 }
 
 @end

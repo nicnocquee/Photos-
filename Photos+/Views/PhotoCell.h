@@ -10,8 +10,12 @@
 
 #import "PhotoAsset.h"
 
+@class PhotoCellView;
+
 @interface PhotoCell : UICollectionViewCell
 
 @property (nonatomic, strong) PhotoAsset *photoAsset;
+
+@property (nonatomic, weak, readonly) PhotoCellView *cellView;
 
 @end
