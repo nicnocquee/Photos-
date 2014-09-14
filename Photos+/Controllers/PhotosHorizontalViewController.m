@@ -14,13 +14,15 @@
 
 #import "UIView+Additionals.h"
 
+#import "PhotoInfoViewController.h"
+
 #import <objc/runtime.h>
 
 #define CELL_SPACING 20
 #define PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO @"photobox.PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO"
 
 
-@interface PhotosHorizontalViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, PhotoZoomableCellDelegate> {
+@interface PhotosHorizontalViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, PhotoZoomableCellDelegate, PhotoInfoViewControllerDelegate> {
     BOOL shouldHideNavigationBar;
 }
 
@@ -62,6 +64,9 @@
     self.darkBackgroundView = [[UIView alloc] initWithFrame:self.view.frame];
     [self.darkBackgroundView setBackgroundColor:[UIColor colorWithWhite:1 alpha:1]];
     [self.collectionView setBackgroundView:self.darkBackgroundView];
+    
+    UIBarButtonItem *infoButton = [[UIBarButtonItem alloc] initWithTitle:@"Info" style:UIBarButtonItemStyleBordered target:self action:@selector(infoButtonTapped:)];
+    [self.navigationItem setRightBarButtonItem:infoButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -281,6 +286,36 @@
 - (void)didDragDownWithPercentage:(float)progress {
     CGFloat alpha = MIN(1-progress+0.3, 1);
     [self.darkBackgroundView setAlpha:alpha];
+}
+
+#pragma mark - Info
+
+- (void)infoButtonTapped:(id)sender {
+    [sender setEnabled:NO];
+    
+    BOOL isGrayscaled = [[self currentCell] isGrayscaled];
+    [self setNavigationBarHidden:!isGrayscaled animated:YES];
+    [[self currentCell] setGrayscaleAndZoom:!isGrayscaled];
+    
+    UIView *gradientView = [[self currentCell] addTransparentGradientWithStartColor:[UIColor blackColor] fromStartPoint:CGPointMake(0, 1) endPoint:CGPointMake(0.7, 0.5)];
+    self.photoInfoBackgroundGradientView = gradientView;
+    [gradientView setAlpha:0];
+    
+    PhotoInfoViewController *photoInfo = [[PhotoInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    [photoInfo setPhoto:[[self currentCell] item]];
+    [photoInfo setDelegate:self];
+    [photoInfo willMoveToParentViewController:self];
+    [self addChildViewController:photoInfo];
+    [self.view addSubview:photoInfo.view];
+    [photoInfo didMoveToParentViewController:self];
+    [photoInfo.view setOriginY:CGRectGetHeight(self.collectionView.frame)];
+    
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        [gradientView setAlpha:1];
+        [photoInfo.view setOriginY:0];
+    } completion:^(BOOL finished) {
+        [sender setEnabled:YES];
+    }];
 }
 
 @end

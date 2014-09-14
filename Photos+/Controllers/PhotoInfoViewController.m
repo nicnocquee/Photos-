@@ -15,6 +15,8 @@
 
 #import "InfoTableViewCell.h"
 
+#import <ImageIO/ImageIO.h>
+
 #define PHOTO_INFO_FONT_SIZE 12
 #define PHOTO_INFO_CLOSE_OFFSET 50
 
@@ -45,19 +47,19 @@
     [self.tableView setBackgroundColor:[UIColor clearColor]];
 
     self.sections = @[NSLocalizedString(@"Camera Data", nil)];
-    
+    //self.photo.rawAsset.defaultRepresentation.metadata
+    NSString *metadataPath = NSStringFromSelector(@selector(exifMetadata));
     self.cameraDataSectionRows = @[
-                                NSLocalizedString(@"Camera Make", nil),
-                                NSLocalizedString(@"Camera Model", nil),
-                                NSLocalizedString(@"Exposure Time", nil),
-                                NSLocalizedString(@"F Number", nil),
-                                NSLocalizedString(@"Focal Length", nil),
-                                NSLocalizedString(@"ISO Time", nil),
-                                NSLocalizedString(@"Dimension", nil),
-                                NSLocalizedString(@"File Name", nil),
-                                NSLocalizedString(@"Date Taken", nil),
-                                NSLocalizedString(@"Location", nil),
-                                NSLocalizedString(@"Location Name", nil)
+                                @[NSLocalizedString(@"Camera Make", nil), metadataPath, (NSString *)kCGImagePropertyExifLensMake],
+                                @[NSLocalizedString(@"Camera Model", nil), metadataPath, (NSString *)kCGImagePropertyExifLensModel],
+                                @[NSLocalizedString(@"Exposure Time", nil), metadataPath, (NSString *)kCGImagePropertyExifExposureTime],
+                                @[NSLocalizedString(@"F Number", nil), metadataPath, (NSString *)kCGImagePropertyExifFNumber],
+                                @[NSLocalizedString(@"Focal Length", nil), metadataPath, (NSString *)kCGImagePropertyExifFocalLength],
+                                @[NSLocalizedString(@"ISO Time", nil),  metadataPath, (NSString *)kCGImagePropertyExifISOSpeedRatings],
+                                @[NSLocalizedString(@"Dimension", nil), NSStringFromSelector(@selector(dimensionString))],
+                                @[NSLocalizedString(@"Date Taken", nil), metadataPath, (NSString *)kCGImagePropertyExifDateTimeOriginal],
+                                @[NSLocalizedString(@"Location", nil), NSStringFromSelector(@selector(latitudeLongitudeString))],
+                                @[NSLocalizedString(@"Location Name", nil), [NSNull null]]
                                    ];
     
     CGFloat cellHeight = [self tableView:nil heightForRowAtIndexPath:nil];
@@ -141,18 +143,26 @@
     NSArray *cameraDataRow = self.cameraDataSectionRows[indexPath.row];
     NSString *key = cameraDataRow[1];
     NSString *value = nil;
-    if (key && [self.photo respondsToSelector:NSSelectorFromString(key)]) {
-        id val = [self.photo valueForKey:key];
-        if ([val isKindOfClass:[NSNumber class]]) {
-            val = [NSString stringWithFormat:@"%f", [val doubleValue]];
-            value = [[val stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"0"]] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"."]];
-        } else value = val;
+    if ([key isKindOfClass:[NSNull class]]) {
+        value = NSLocalizedString(@"Not available", nil);
     } else {
-        if (key) {
-            value = [key stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[[]]"]];
+        id val;
+        if ([self.photo respondsToSelector:NSSelectorFromString(key)]) {
+            val = [self.photo valueForKeyPath:key];
+            if ([val isKindOfClass:[NSDictionary class]]) {
+                val = val[cameraDataRow[2]];
+                if ([val isKindOfClass:[NSArray class]]) {
+                    val = [val firstObject];
+                }
+            }
+            if ([val isKindOfClass:[NSNumber class]]) {
+                val = [NSString stringWithFormat:@"%.1f", [val doubleValue]];
+            }
+        } else {
+            val = key;
         }
+        value = val;
     }
-    if (!value || value.length == 0) value = NSLocalizedString(@"Not available", nil);
     [cell setText:cameraDataRow[0] detail:value];
 }
 

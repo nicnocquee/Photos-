@@ -223,19 +223,21 @@
 }
 
 - (void)setItem:(id)item {
-    PhotoAsset *photo = (PhotoAsset *)item;
-    UIImage *image = [UIImage imageWithCGImage:photo.rawAsset.defaultRepresentation.fullScreenImage];
-    if (image) {
-        [self.thisImageview setImage:image];
-        [self setImageSize:CGSizeMake(image.size.width, image.size.height)];
-    } else {
-        [photo loadAssetWithCompletion:^(ALAsset *asset) {
-            UIImage *image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
+    if (_item != item) {
+        _item = item;
+        PhotoAsset *photo = (PhotoAsset *)item;
+        UIImage *image = [UIImage imageWithCGImage:photo.rawAsset.defaultRepresentation.fullScreenImage];
+        if (image) {
             [self.thisImageview setImage:image];
             [self setImageSize:CGSizeMake(image.size.width, image.size.height)];
-        }];
+        } else {
+            [photo loadAssetWithCompletion:^(ALAsset *asset) {
+                UIImage *image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
+                [self.thisImageview setImage:image];
+                [self setImageSize:CGSizeMake(image.size.width, image.size.height)];
+            }];
+        }
     }
-    
 }
 
 - (UIImageView *)grayImageView {

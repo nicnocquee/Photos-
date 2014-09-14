@@ -23,6 +23,7 @@
 @property (nonatomic, strong) UIImageView *thisImageview;
 @property (nonatomic, weak) id<PhotoZoomableCellDelegate> delegate;
 @property (nonatomic, assign, getter = isClosingViewController) BOOL closingViewController;
+@property (nonatomic, strong) id item;
 
 - (UIImage *)originalImage;
 - (void)doTeasingGesture;
@@ -33,6 +34,5 @@
 - (BOOL)isGrayscaled;
 - (CGFloat)zoomScaleToFillScreen;
 - (UIImageView *)grayImageView;
-- (void)setItem:(id)item;
 
 @end

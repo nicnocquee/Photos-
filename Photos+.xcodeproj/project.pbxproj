@@ -27,6 +27,8 @@
 		0358E68A19C4209B0097E5B6 /* InfoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0358E68719C4209B0097E5B6 /* InfoTableViewCell.m */; };
 		0358E68D19C467CC0097E5B6 /* DelightfulCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0358E68B19C467CC0097E5B6 /* DelightfulCache.m */; };
 		0358E68E19C467CC0097E5B6 /* DelightfulCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 0358E68B19C467CC0097E5B6 /* DelightfulCache.m */; };
+		0358E69019C5CAE10097E5B6 /* InfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0358E68F19C5CAE10097E5B6 /* InfoTableViewCell.xib */; };
+		0358E69119C5CAE10097E5B6 /* InfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0358E68F19C5CAE10097E5B6 /* InfoTableViewCell.xib */; };
 		036E38F9199C893200448BAA /* PhotosLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 036E38F8199C893200448BAA /* PhotosLibrary.m */; };
 		03A3A22D1999E9370055EF9E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A3A22C1999E9370055EF9E /* Foundation.framework */; };
 		03A3A22F1999E9370055EF9E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A3A22E1999E9370055EF9E /* CoreGraphics.framework */; };
@@ -113,6 +115,7 @@
 		0358E68819C4209B0097E5B6 /* InfoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoTableViewCell.h; sourceTree = "<group>"; };
 		0358E68B19C467CC0097E5B6 /* DelightfulCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DelightfulCache.m; sourceTree = "<group>"; };
 		0358E68C19C467CC0097E5B6 /* DelightfulCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DelightfulCache.h; sourceTree = "<group>"; };
+		0358E68F19C5CAE10097E5B6 /* InfoTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = InfoTableViewCell.xib; sourceTree = "<group>"; };
 		036E38F7199C893200448BAA /* PhotosLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotosLibrary.h; sourceTree = "<group>"; };
 		036E38F8199C893200448BAA /* PhotosLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotosLibrary.m; sourceTree = "<group>"; };
 		03A3A2291999E9370055EF9E /* Photos+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photos+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -329,6 +332,7 @@
 		03A3A2691999EE680055EF9E /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0358E68F19C5CAE10097E5B6 /* InfoTableViewCell.xib */,
 				0358E68719C4209B0097E5B6 /* InfoTableViewCell.m */,
 				0358E68819C4209B0097E5B6 /* InfoTableViewCell.h */,
 				03BFE5E119AB450400E4FCA5 /* PhotoZoomableCell.m */,
@@ -484,6 +488,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0358E69019C5CAE10097E5B6 /* InfoTableViewCell.xib in Resources */,
 				03A3A26B1999EE840055EF9E /* PhotoCellView.xib in Resources */,
 				03A3A2451999E9370055EF9E /* Images.xcassets in Resources */,
 				03A3A2371999E9370055EF9E /* InfoPlist.strings in Resources */,
@@ -503,6 +508,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0358E69119C5CAE10097E5B6 /* InfoTableViewCell.xib in Resources */,
 				03BFE5C919AB3CA400E4FCA5 /* PhotoCellView.xib in Resources */,
 				03BFE5CA19AB3CA400E4FCA5 /* Images.xcassets in Resources */,
 				03BFE5CB19AB3CA400E4FCA5 /* InfoPlist.strings in Resources */,

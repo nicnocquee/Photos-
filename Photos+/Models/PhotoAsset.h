@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong, readonly) NSDictionary *metadata;
 
+@property (nonatomic, strong, readonly) NSDictionary *exifMetadata;
+
 @property (nonatomic, assign, getter = isScreenshot) BOOL screenshot;
 
 @property (nonatomic, assign) BOOL hasFaces;
@@ -47,6 +49,10 @@
 @property (nonatomic, strong, readonly) NSNumber *latitude;
 
 @property (nonatomic, strong, readonly) NSNumber *longitude;
+
+@property (nonatomic, strong, readonly) NSString *latitudeLongitudeString;
+
+@property (nonatomic, strong, readonly) NSString *dimensionString;
 
 - (void)setALAsset:(ALAsset *)asset;
 

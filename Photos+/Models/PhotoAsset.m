@@ -22,6 +22,8 @@
 
 @property (nonatomic, strong) NSDictionary *metadata;
 
+@property (nonatomic, strong) NSDictionary *exifMetadata;
+
 @property (nonatomic, strong) ALAsset *rawAsset;
 
 @end
@@ -49,6 +51,13 @@
     return _metadata;
 }
 
+- (NSDictionary *)exifMetadata {
+    if (!_exifMetadata) {
+        _exifMetadata = self.metadata[(NSString *)kCGImagePropertyExifDictionary];
+    }
+    return _exifMetadata;
+}
+
 - (NSNumber *)latitude {
     NSDictionary *gpsData = self.metadata[(NSString *)kCGImagePropertyGPSDictionary];
     return gpsData[(NSString *)kCGImagePropertyGPSLatitude];
@@ -57,6 +66,16 @@
 - (NSNumber *)longitude {
     NSDictionary *gpsData = self.metadata[(NSString *)kCGImagePropertyGPSDictionary];
     return gpsData[(NSString *)kCGImagePropertyGPSLongitude];
+}
+
+- (NSString *)latitudeLongitudeString {
+    double latitude = [[self latitude] doubleValue];
+    double longitude = [[self longitude] doubleValue];
+    return [NSString stringWithFormat:@"%f, %f", latitude, longitude];
+}
+
+- (NSString *)dimensionString {
+    return [NSString stringWithFormat:@"%.0fx%.0f", self.rawAsset.defaultRepresentation.dimensions.width, self.rawAsset.defaultRepresentation.dimensions.height];
 }
 
 + (NSArray *)ignoredProperties {
