@@ -88,7 +88,10 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     
     [self loadPhotos];
     
-    [self setHidesBottomBarWhenPushed:YES];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self setTabbarHidden:NO];
 }
 
 - (void)initObservers {
@@ -99,6 +102,20 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setTabbarHidden:(BOOL)hidden {
+    [UIView animateWithDuration:0.3 animations:^{
+        self.navigationController.tabBarController.tabBar.frame = ({
+            CGRect frame = self.tabBarController.tabBar.frame;
+            frame.origin.x = 0;
+            frame.origin.y = CGRectGetHeight(self.navigationController.tabBarController.tabBar.superview.frame) - CGRectGetHeight(self.navigationController.tabBarController.tabBar.frame);
+            frame;
+        });
+        [self.navigationController.tabBarController.tabBar setAlpha:(hidden)?0:1];
+    } completion:^(BOOL finished) {
+        [self.navigationController.tabBarController.tabBar setHidden:hidden];
+    }];
 }
 
 - (void)loadPhotos {
@@ -278,7 +295,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+    [self setTabbarHidden:YES];
     PhotoCell *cell = (PhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];
     self.selectedCell = cell;
     self.selectedAsset = self.assets[indexPath.item];

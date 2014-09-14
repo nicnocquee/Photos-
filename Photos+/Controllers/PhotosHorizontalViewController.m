@@ -313,7 +313,7 @@
     
     [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
         [gradientView setAlpha:1];
-        [photoInfo.view setOriginY:0];
+        [photoInfo.view setOriginY:CGRectGetHeight([[UIApplication sharedApplication] statusBarFrame])];
     } completion:^(BOOL finished) {
         [sender setEnabled:YES];
     }];

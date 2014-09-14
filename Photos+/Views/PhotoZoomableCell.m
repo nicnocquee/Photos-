@@ -274,9 +274,14 @@
 
 - (void)setGrayscaleAndZoom:(BOOL)grayscale animated:(BOOL)animated {
     if (grayscale) {
-        if (self.thisImageview.image) {
+        PhotoAsset *asset = (PhotoAsset *)self.item;
+        UIImage *image = [UIImage imageWithCGImage:asset.rawAsset.aspectRatioThumbnail];
+        if (!image) {
+            image = self.thisImageview.image;
+        }
+        if (image) {
             CGFloat maxZoom = [self zoomScaleToFillScreen];
-            UIImage *grayscaleImage = (self.thisImageview.image.size.width < 1000)?[self.thisImageview.image grayscaledAndBlurredImage]:[self.thisImageview.image grayscaleImage];
+            UIImage *grayscaleImage = (image.size.width < 1000)?[image grayscaledAndBlurredImage]:[image grayscaleImage];
             UIImageView *grayImageView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:[grayscaleImage CGImage] scale:1 orientation:UIImageOrientationUp]];
             [grayImageView setTag:PBX_GRAY_IMAGE_VIEW];
             [grayImageView setFrame:self.thisImageview.bounds];
