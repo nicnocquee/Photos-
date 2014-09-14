@@ -12,7 +12,9 @@
 
 #import "PhotoAsset.h"
 
-@interface PhotosViewController : UIViewController
+#import "ShowFullScreenPhotosAnimatedTransitioning.h"
+
+@interface PhotosViewController : UIViewController <CustomAnimationTransitionFromViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 

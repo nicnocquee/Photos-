@@ -10,15 +10,19 @@
 
 #import "PhotoCell.h"
 
-#import "PhotosViewControllerCollectionViewDelegate.h"
+#import "PhotosHorizontalViewController.h"
 
 #import "PhotoAsset.h"
 
 static void * photosToCheckKVO = &photosToCheckKVO;
 
-@interface PhotosViewController () <UICollectionViewDataSource>
+@interface PhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
 
-@property (nonatomic, strong) PhotosViewControllerCollectionViewDelegate *collectionViewDelegate;
+@property (nonatomic, strong) NSValue *cellSize;
+
+@property (nonatomic, assign) int numberOfColumns;
+
+@property (nonatomic, assign) CGFloat cellSpacing;
 
 @end
 
@@ -27,6 +31,8 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
+        self.numberOfColumns = 3;
+        self.cellSpacing = 1;
         [self setupNotifications];
         [self initObservers];
     }
@@ -53,8 +59,8 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     
     self.title = [self title];
-    
-    self.collectionViewDelegate = [[PhotosViewControllerCollectionViewDelegate alloc] initWithCollectionView:self.collectionView];
+
+    [self.collectionView setDelegate:self];
     [self.collectionView setDataSource:self];
     [self.collectionView registerClass:[PhotoCell class] forCellWithReuseIdentifier:NSStringFromClass([PhotoCell class])];
         
@@ -127,7 +133,12 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     }
     
     if (self.assets.count > count) {
-        [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:indexToInsert inSection:0]]];
+        if (self.assets.count == 1) {
+            [self.collectionView reloadData];
+        } else {
+            [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:indexToInsert inSection:0]]];
+        }
+        
     }
     return indexToInsert;
 }
@@ -213,6 +224,40 @@ static void * photosToCheckKVO = &photosToCheckKVO;
     [cell setPhotoAsset:[self.assets objectAtIndex:indexPath.item]];
     return cell;
 }
+
+#pragma mark - UICollectionViewDelegate
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.cellSize) {
+        return [self.cellSize CGSizeValue];
+    }
+    
+    CGFloat width = floorf((CGRectGetWidth(self.collectionView.frame) - ((self.numberOfColumns+1)*self.cellSpacing))/self.numberOfColumns);
+    CGSize size = CGSizeMake(width, width);
+    self.cellSize = [NSValue valueWithCGSize:size];
+    return size;
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    return UIEdgeInsetsMake(self.cellSpacing, self.cellSpacing, self.cellSpacing, self.cellSpacing);
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    return self.cellSpacing;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return self.cellSpacing;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    PhotosHorizontalViewController *horizontalPhotos = [[PhotosHorizontalViewController alloc] init];
+    [horizontalPhotos setIndexOfPhotoToShowOnLoad:indexPath.item];
+    [horizontalPhotos setPhotos:self.assets];
+    [self.navigationController pushViewController:horizontalPhotos animated:YES];
+}
+
 
 #pragma mark - Notifications
 

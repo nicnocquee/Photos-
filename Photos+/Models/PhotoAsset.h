@@ -44,6 +44,10 @@
 
 @property (nonatomic, strong, readonly) ALAsset *rawAsset;
 
+@property (nonatomic, strong, readonly) NSNumber *latitude;
+
+@property (nonatomic, strong, readonly) NSNumber *longitude;
+
 - (void)setALAsset:(ALAsset *)asset;
 
 - (void)loadAssetWithCompletion:(void(^)(id asset))completion;

@@ -1,4 +1,25 @@
 PODS:
+  - AFNetworking (2.4.1):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+    - AFNetworking/UIKit
+  - AFNetworking/NSURLConnection (2.4.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/NSURLSession (2.4.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.4.1)
+  - AFNetworking/Security (2.4.1)
+  - AFNetworking/Serialization (2.4.1)
+  - AFNetworking/UIKit (2.4.1):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
   - FCModel (0.9.0):
     - FMDB (~> 2.1)
   - FMDB (2.3):
@@ -6,12 +27,26 @@ PODS:
   - FMDB/common (2.3)
   - FMDB/standard (2.3):
     - FMDB/common
+  - GPUImage (0.1.4)
+  - SVProgressHUD (1.0)
+  - TMCache (1.2.1)
+  - UIImageViewModeScaleAspect (1.3)
 
 DEPENDENCIES:
+  - AFNetworking
   - FCModel
+  - GPUImage (= 0.1.4)
+  - SVProgressHUD (= 1.0)
+  - TMCache
+  - UIImageViewModeScaleAspect (= 1.3)
 
 SPEC CHECKSUMS:
+  AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
   FCModel: 1f01fdcb5b469d3ab3c307ee90cb1b743cc3adfd
   FMDB: 31ec26773c7f7b7890a6038235a1f2bbd933a7cb
+  GPUImage: ac2bde5f4dbea02a81ced6313964cec1f2043ca9
+  SVProgressHUD: 5034c6e22b8c2ca3e09402e48d41ed0340aa1c50
+  TMCache: ed936c5b4684e4ea15113d46fba8829ed3baadad
+  UIImageViewModeScaleAspect: 61ea5fbcbddab6ff8ae5fe86a657f9208dd19fda
 
 COCOAPODS: 0.33.1

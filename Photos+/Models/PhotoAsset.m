@@ -10,6 +10,8 @@
 
 #import "PhotosLibrary.h"
 
+#import <ImageIO/ImageIO.h>
+
 @interface PhotoAsset ()
 
 @property (nonatomic, strong) UIImage *thumbnailImage;
@@ -45,6 +47,16 @@
         _metadata = [self.assetRepresentation metadata];
     }
     return _metadata;
+}
+
+- (NSNumber *)latitude {
+    NSDictionary *gpsData = self.metadata[(NSString *)kCGImagePropertyGPSDictionary];
+    return gpsData[(NSString *)kCGImagePropertyGPSLatitude];
+}
+
+- (NSNumber *)longitude {
+    NSDictionary *gpsData = self.metadata[(NSString *)kCGImagePropertyGPSDictionary];
+    return gpsData[(NSString *)kCGImagePropertyGPSLongitude];
 }
 
 + (NSArray *)ignoredProperties {
