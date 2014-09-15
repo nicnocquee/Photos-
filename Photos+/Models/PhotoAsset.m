@@ -78,12 +78,7 @@
 }
 
 - (NSString *)latitudeLongitudeString {
-    double latitude = [[self latitude] doubleValue];
-    double longitude = [[self longitude] doubleValue];
-    if (latitude == 0 && longitude == 0) {
-        return @"";
-    }
-    return [NSString stringWithFormat:@"%f, %f", latitude, longitude];
+    return [self clLocation]?[[self clLocation] description]:nil;
 }
 
 - (NSString *)dimensionString {
@@ -91,12 +86,6 @@
 }
 
 - (NSDate *)dateTakenDate {
-//    NSDictionary *tiffMetadata = [self tiffMetadata];
-//    NSDate *date = tiffMetadata[(NSString *)kCGImagePropertyTIFFDateTime];
-//    if (date) {
-//        return date;
-//    }
-    
     NSString *dateTakenStr = self.metadata[(NSString *)kCGImagePropertyExifDictionary][(NSString *)kCGImagePropertyExifDateTimeOriginal];
     if (!dateTakenStr) {
         return nil;
@@ -115,8 +104,6 @@
     if (readableDateFormatter == nil) {
         readableDateFormatter = [[NSDateFormatter alloc] init];
         [readableDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"EdMMMyyyy HH:mm" options:0 locale:[NSLocale currentLocale]]];
-        //[readableDateFormatter setDateStyle:NSDateFormatterMediumStyle];
-        //[readableDateFormatter setTimeStyle:NSDateFormatterShortStyle];
     }
     return readableDateFormatter;
 }
@@ -136,12 +123,7 @@
 }
 
 - (CLLocation *)clLocation {
-    NSNumber *latitude = [self latitude];
-    NSNumber *longitude = [self longitude];
-    if (latitude && ![latitude isKindOfClass:[NSNull class]] && longitude && ![longitude isKindOfClass:[NSNull class]]) {
-        return [[CLLocation alloc] initWithLatitude:[latitude doubleValue] longitude:[longitude doubleValue]];
-    }
-    return nil;
+    return [self.rawAsset valueForProperty:ALAssetPropertyLocation];
 }
 
 + (NSArray *)ignoredProperties {

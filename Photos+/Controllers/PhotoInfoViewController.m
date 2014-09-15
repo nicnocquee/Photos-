@@ -71,31 +71,21 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    NSNumber *latitude = [self.photo latitude];
-    NSNumber *longitude = [self.photo longitude];
-    if (latitude && ![latitude isKindOfClass:[NSNull class]] && longitude && ![longitude isKindOfClass:[NSNull class]]) {
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:[latitude doubleValue] longitude:[longitude doubleValue]];
-        if (location) {
-            __weak typeof (self) selfie = self;
-            [[LocationManager sharedManager] nameForLocation:location completionHandler:^(NSString *placemark, NSError *error) {
-                NSMutableArray *cameraDataSectionRowsCopy = [selfie.cameraDataSectionRows mutableCopy];
-                [cameraDataSectionRowsCopy removeLastObject];
-                if (placemark && !error) {
-                    [cameraDataSectionRowsCopy addObject:@[NSLocalizedString(@"Location Name", nil), placemark]];
-                } else {
-                    [cameraDataSectionRowsCopy addObject:@[NSLocalizedString(@"Location Name", nil), @""]];
-                }
-                
-                selfie.cameraDataSectionRows = cameraDataSectionRowsCopy;
-                [selfie.tableView reloadData];
-            }];
-        } else {
-            NSMutableArray *cameraDataSectionRowsCopy = [self.cameraDataSectionRows mutableCopy];
+    CLLocation *location = [self.photo clLocation];
+    if (location) {
+        __weak typeof (self) selfie = self;
+        [[LocationManager sharedManager] nameForLocation:location completionHandler:^(NSString *placemark, NSError *error) {
+            NSMutableArray *cameraDataSectionRowsCopy = [selfie.cameraDataSectionRows mutableCopy];
             [cameraDataSectionRowsCopy removeLastObject];
-            [cameraDataSectionRowsCopy addObject:@[NSLocalizedString(@"Location Name", nil), @""]];
-            self.cameraDataSectionRows = cameraDataSectionRowsCopy;
-            [self.tableView reloadData];
-        }
+            if (placemark && !error) {
+                [cameraDataSectionRowsCopy addObject:@[NSLocalizedString(@"Location Name", nil), placemark]];
+            } else {
+                [cameraDataSectionRowsCopy addObject:@[NSLocalizedString(@"Location Name", nil), @""]];
+            }
+            
+            selfie.cameraDataSectionRows = cameraDataSectionRowsCopy;
+            [selfie.tableView reloadData];
+        }];
     } else {
         NSMutableArray *cameraDataSectionRowsCopy = [self.cameraDataSectionRows mutableCopy];
         [cameraDataSectionRowsCopy removeLastObject];
