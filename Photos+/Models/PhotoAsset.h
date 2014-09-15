@@ -8,6 +8,8 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
+#import <CoreLocation/CoreLocation.h>
+
 @interface PhotoAsset : FCModel
 
 @property (nonatomic) int64_t id;
@@ -37,6 +39,8 @@
 @property (nonatomic, assign) NSInteger assetIndex;
 
 @property (nonatomic, strong) NSString *location;
+
+@property (nonatomic, strong, readonly) CLLocation *clLocation;
 
 @property (nonatomic, strong) NSString *cameraType;
 

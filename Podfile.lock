@@ -31,6 +31,7 @@ PODS:
   - SVProgressHUD (1.0)
   - TMCache (1.2.1)
   - UIImageViewModeScaleAspect (1.3)
+  - UIView+AutoLayout (1.3.0)
 
 DEPENDENCIES:
   - AFNetworking
@@ -39,6 +40,7 @@ DEPENDENCIES:
   - SVProgressHUD (= 1.0)
   - TMCache
   - UIImageViewModeScaleAspect (= 1.3)
+  - UIView+AutoLayout (= 1.3.0)
 
 SPEC CHECKSUMS:
   AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
@@ -48,5 +50,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: 5034c6e22b8c2ca3e09402e48d41ed0340aa1c50
   TMCache: ed936c5b4684e4ea15113d46fba8829ed3baadad
   UIImageViewModeScaleAspect: 61ea5fbcbddab6ff8ae5fe86a657f9208dd19fda
+  UIView+AutoLayout: dc24ec6114498617510af759148a05b957af1b38
 
 COCOAPODS: 0.33.1

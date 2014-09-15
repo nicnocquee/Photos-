@@ -18,6 +18,10 @@
 
 #import <objc/runtime.h>
 
+#import <UIView+AutoLayout.h>
+
+#import "LocationManager.h"
+
 #define CELL_SPACING 20
 #define PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO @"photobox.PBX_DID_SHOW_SCROLL_UP_AND_DOWN_TO_CLOSE_FULL_SCREEN_PHOTO"
 
@@ -34,6 +38,8 @@
 @property (nonatomic, assign) BOOL justOpened;
 @property (nonatomic, strong) UIView *backgroundViewControllerView;
 @property (nonatomic, strong) UIView *photoInfoBackgroundGradientView;
+@property (nonatomic, strong) UILabel *dateInfoLabel;
+@property (nonatomic, strong) UIView *dateInfoLabelBackground;
 
 @end
 
@@ -67,6 +73,8 @@
     
     UIBarButtonItem *infoButton = [[UIBarButtonItem alloc] initWithTitle:@"Info" style:UIBarButtonItemStyleBordered target:self action:@selector(infoButtonTapped:)];
     [self.navigationItem setRightBarButtonItem:infoButton];
+    
+    [self insertDateInfoView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -102,6 +110,74 @@
     NSInteger page = lround(fractionalPage);
     self.firstShownPhotoIndex = page;
     return page;
+}
+
+- (void)insertDateInfoView {
+    if (!self.dateInfoLabel) {
+        self.dateInfoLabel = [[UILabel alloc] init];
+        [self.dateInfoLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self.dateInfoLabel setBackgroundColor:[UIColor clearColor]];
+        [self.dateInfoLabel setTextColor:[UIColor whiteColor]];
+        [self.dateInfoLabel setNumberOfLines:0];
+        [self.dateInfoLabel setFont:[UIFont systemFontOfSize:12]];
+        [self.view addSubview:self.dateInfoLabel];
+        
+        UIView *dateInfoBackgroundView = [[UIView alloc] init];
+        [dateInfoBackgroundView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [dateInfoBackgroundView setBackgroundColor:[UIColor colorWithWhite:0.000 alpha:0.360]];
+        [self.view insertSubview:dateInfoBackgroundView belowSubview:self.dateInfoLabel];
+        
+        [self.dateInfoLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view withOffset:-10];
+        [self.dateInfoLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.view withOffset:10];
+        [self.dateInfoLabel autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.view withOffset:-10];
+        [dateInfoBackgroundView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
+        [dateInfoBackgroundView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.view];
+        [dateInfoBackgroundView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.view];
+        [dateInfoBackgroundView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.dateInfoLabel withOffset:-10];
+        self.dateInfoLabelBackground = dateInfoBackgroundView;
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoButtonTapped:)];
+        [self.dateInfoLabel addGestureRecognizer:tap];
+        [self.dateInfoLabel setUserInteractionEnabled:YES];
+    }
+    
+    [self setDateInfoText];
+}
+
+- (void)setDateInfoText {
+    NSInteger currentPage = [self currentCollectionViewPage:self.collectionView];
+    PhotoAsset *asset = [self.photos objectAtIndex:currentPage];
+    NSString *date = [asset dateTakenString];
+    if (!date) {
+        date = [asset dateCreatedString];
+    }
+    [self.dateInfoLabel setText:date];
+    
+    CLLocation *location = [asset clLocation];
+    if (location) {
+        [[LocationManager sharedManager] nameForLocation:location completionHandler:^(NSString *placemark, NSError *error) {
+            if (currentPage == [self currentCollectionViewPage:self.collectionView]) {
+                if (!error) {
+                    NSString *text = [NSString stringWithFormat:@"%@\n%@", date, placemark];
+                    NSMutableAttributedString *attr = [[NSMutableAttributedString alloc] initWithString:text];
+                    [attr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:NSMakeRange(0, text.length)];
+                    [attr addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:NSMakeRange(0, text.length)];
+                    [self.dateInfoLabel setAttributedText:attr];
+                }
+            }
+            
+        }];
+    }
+}
+
+- (void)setDateInfoLabelHidden:(BOOL)hidden {
+    [UIView animateWithDuration:0.3 animations:^{
+        [self.dateInfoLabel setAlpha:(hidden)?0:1];
+        [self.dateInfoLabelBackground setAlpha:(hidden)?0:1];
+    } completion:^(BOOL finished) {
+        [self.dateInfoLabelBackground setHidden:hidden];
+        [self.dateInfoLabel setHidden:hidden];
+    }];
 }
 
 - (void)insertBackgroundSnapshotView {
@@ -225,6 +301,7 @@
                 [self.delegate photosHorizontalScrollingViewController:self didChangePage:page item:photo];
             }
             [self insertBackgroundSnapshotView];
+            [self setDateInfoText];
         } else {
             self.justOpened = NO;
             [self showHintIfNeeded];
@@ -293,6 +370,8 @@
 - (void)infoButtonTapped:(id)sender {
     [sender setEnabled:NO];
     
+    [self setDateInfoLabelHidden:YES];
+    
     BOOL isGrayscaled = [[self currentCell] isGrayscaled];
     [self setNavigationBarHidden:!isGrayscaled animated:YES];
     [[self currentCell] setGrayscaleAndZoom:!isGrayscaled];
@@ -332,6 +411,8 @@
         [self.photoInfoBackgroundGradientView removeFromSuperview];
         [[self currentCell] setGrayscaleAndZoom:NO animated:YES];
     }];
+    
+    [self setDateInfoLabelHidden:NO];
 }
 
 - (void)photoInfoViewController:(PhotoInfoViewController *)photoInfo didDragToClose:(CGFloat)progress {

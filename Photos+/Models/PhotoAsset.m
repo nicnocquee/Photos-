@@ -89,6 +89,15 @@
     return [NSString stringWithFormat:@"%@", self.dateCreated];
 }
 
+- (CLLocation *)clLocation {
+    NSNumber *latitude = [self latitude];
+    NSNumber *longitude = [self longitude];
+    if (latitude && ![latitude isKindOfClass:[NSNull class]] && longitude && ![longitude isKindOfClass:[NSNull class]]) {
+        return [[CLLocation alloc] initWithLatitude:[latitude doubleValue] longitude:[longitude doubleValue]];
+    }
+    return nil;
+}
+
 + (NSArray *)ignoredProperties {
     return @[NSStringFromSelector(@selector(thumbnailImage)),
              NSStringFromSelector(@selector(assetRepresentation)),
