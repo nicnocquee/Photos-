@@ -32,4 +32,8 @@
     return NSStringFromSelector(@selector(numberOfPhotosToCheckForScreenshots));
 }
 
+- (UIImage *)tabBarItemImage {
+    return [UIImage imageNamed:@"screenshot"];
+}
+
 @end

@@ -32,4 +32,8 @@
     return NSStringFromSelector(@selector(numberOfPhotosToCheckForFaces));
 }
 
+- (UIImage *)tabBarItemImage {
+    return [UIImage imageNamed:@"face"];
+}
+
 @end

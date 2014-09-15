@@ -30,4 +30,8 @@
     return NSStringFromSelector(@selector(numberOfPhotosToCheckForSelfies));
 }
 
+- (UIImage *)tabBarItemImage {
+    return [UIImage imageNamed:@"selfie"];
+}
+
 @end

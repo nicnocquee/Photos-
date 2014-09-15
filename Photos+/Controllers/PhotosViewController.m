@@ -22,6 +22,8 @@
 
 #import "UIViewController+Additionals.h"
 
+#import <Crashlytics/Crashlytics.h>
+
 static void * photosToCheckKVO = &photosToCheckKVO;
 
 @interface PhotosViewController () <UICollectionViewDataSource, UICollectionViewDelegate, CustomAnimationTransitionFromViewControllerDelegate, PhotosHorizontalViewControllerDelegate>
@@ -51,6 +53,8 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         self.cellSpacing = 1;
         [self setupNotifications];
         [self initObservers];
+        
+        [[Crashlytics sharedInstance] setObjectValue:NSStringFromClass([self class]) forKey:@"PHOTOS_TYPE"];
     }
     return self;
 }
@@ -148,38 +152,40 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset {
-    NSInteger indexToInsert = 0;
-    NSInteger index = [self.assets indexOfObject:photoAsset];
-    NSInteger count = self.assets.count;
-    if (index != NSNotFound) {
-        //NSLog(@"inserted asset exists, ignore");
-        indexToInsert = NSNotFound;
-    } else {
-        //NSLog(@"to insert asset index %d", (int)photoAsset.assetIndex);
-        NSArray *assets = [self.assets.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"assetIndex > %d", (int)photoAsset.assetIndex]];
-        if (assets.count > 0) {
-            assets = [assets sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"assetIndex" ascending:NO]]];
-            PhotoAsset *nextAsset = [assets lastObject];
-            NSAssert(nextAsset, @"Next asset should not be nil");   
-            //NSLog(@"last asset index %d", (int)nextAsset.assetIndex);
-            NSInteger indexInAssets = [self.assets indexOfObject:nextAsset];
-            NSInteger insertIndex = MIN(indexInAssets+1, self.assets.count);
-            [self.assets insertObject:photoAsset atIndex:insertIndex];
-            indexToInsert = insertIndex;
+    @synchronized(photoAsset) {
+        NSInteger indexToInsert = 0;
+        NSInteger index = [self.assets indexOfObject:photoAsset];
+        NSInteger count = self.assets.count;
+        if (index != NSNotFound) {
+            //NSLog(@"inserted asset exists, ignore");
+            indexToInsert = NSNotFound;
         } else {
-            [self.assets insertObject:photoAsset atIndex:0];
-        }
-    }
-    
-    if (self.assets.count > count) {
-        if (self.assets.count == 1) {
-            [self.collectionView reloadData];
-        } else {
-            [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:indexToInsert inSection:0]]];
+            //NSLog(@"to insert asset index %d", (int)photoAsset.assetIndex);
+            NSArray *assets = [self.assets.array filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"assetIndex > %d", (int)photoAsset.assetIndex]];
+            if (assets.count > 0) {
+                assets = [assets sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"assetIndex" ascending:NO]]];
+                PhotoAsset *nextAsset = [assets lastObject];
+                NSAssert(nextAsset, @"Next asset should not be nil");
+                //NSLog(@"last asset index %d", (int)nextAsset.assetIndex);
+                NSInteger indexInAssets = [self.assets indexOfObject:nextAsset];
+                NSInteger insertIndex = MIN(indexInAssets+1, self.assets.count);
+                [self.assets insertObject:photoAsset atIndex:insertIndex];
+                indexToInsert = insertIndex;
+            } else {
+                [self.assets insertObject:photoAsset atIndex:0];
+            }
         }
         
+        if (self.assets.count > count) {
+            if (self.assets.count == 1) {
+                [self.collectionView reloadData];
+            } else {
+                [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:indexToInsert inSection:0]]];
+            }
+            
+        }
+        return indexToInsert;
     }
-    return indexToInsert;
 }
 
 - (void)removePhotoAsset:(PhotoAsset *)photoAsset {
@@ -237,7 +243,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 }
 
 - (UIImage *)tabBarItemImage {
-    return nil;
+    return [UIImage imageNamed:@"allphotos"];
 }
 
 - (NSString *)title {
