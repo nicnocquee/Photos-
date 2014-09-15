@@ -35,7 +35,7 @@
 - (void)setALAsset:(ALAsset *)asset {
     self.rawAsset = asset;
     self.assetRepresentation = [asset defaultRepresentation];
-    self.url = [self.assetRepresentation url];
+    self.url = [asset valueForProperty:ALAssetPropertyAssetURL];
     self.dateCreated = [asset valueForProperty:ALAssetPropertyDate];
 }
 

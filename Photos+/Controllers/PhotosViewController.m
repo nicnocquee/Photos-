@@ -159,6 +159,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         NSInteger count = self.assets.count;
         if (index != NSNotFound) {
             //NSLog(@"inserted asset exists, ignore");
+            CLSLog(@"%@ Not inserting asset", NSStringFromClass(self.class));
             indexToInsert = NSNotFound;
         } else {
             //NSLog(@"to insert asset index %d", (int)photoAsset.assetIndex);
@@ -170,19 +171,25 @@ static void * photosToCheckKVO = &photosToCheckKVO;
                 //NSLog(@"last asset index %d", (int)nextAsset.assetIndex);
                 NSInteger indexInAssets = [self.assets indexOfObject:nextAsset];
                 NSInteger insertIndex = MIN(indexInAssets+1, self.assets.count);
+                CLSLog(@"%@ Inserting asset at index %ld", NSStringFromClass(self.class), (long)insertIndex);
                 [self.assets insertObject:photoAsset atIndex:insertIndex];
                 indexToInsert = insertIndex;
             } else {
+                CLSLog(@"%@ Inserting asset at index 0", NSStringFromClass(self.class));
                 [self.assets insertObject:photoAsset atIndex:0];
             }
         }
         
         if (self.assets.count > count) {
-            if (self.assets.count == 1) {
-                [self.collectionView reloadData];
-            } else {
-                [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:indexToInsert inSection:0]]];
-            }
+            CLSLog(@"%@ Insert item at index", NSStringFromClass(self.class));
+            [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:indexToInsert inSection:0]]];
+//            if (self.assets.count == 1) {
+//                CLSLog(@"%@ Reloading data", NSStringFromClass(self.class));
+//                [self.collectionView reloadData];
+//            } else {
+//                CLSLog(@"%@ Insert item at index", NSStringFromClass(self.class));
+//                [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:indexToInsert inSection:0]]];
+//            }
             
         }
         return indexToInsert;
