@@ -398,7 +398,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
         if (indexPath.section < [self.collectionView numberOfSections]) {
             [self setSelectedItemRectAtIndexPath:indexPath];
             
-            [self.collectionView scrollRectToVisible:self.selectedItemRect animated:NO];
+            [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:NO];
         }
     }
     
