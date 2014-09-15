@@ -91,6 +91,12 @@
 }
 
 - (NSDate *)dateTakenDate {
+//    NSDictionary *tiffMetadata = [self tiffMetadata];
+//    NSDate *date = tiffMetadata[(NSString *)kCGImagePropertyTIFFDateTime];
+//    if (date) {
+//        return date;
+//    }
+    
     NSString *dateTakenStr = self.metadata[(NSString *)kCGImagePropertyExifDictionary][(NSString *)kCGImagePropertyExifDateTimeOriginal];
     if (!dateTakenStr) {
         return nil;
@@ -98,7 +104,7 @@
     static NSDateFormatter *dateFormatter = nil;
     if (dateFormatter == nil) {
         dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy:mm:dd HH:mm:ss"];
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
     }
     NSDate *date = [dateFormatter dateFromString:dateTakenStr];
     return date;
