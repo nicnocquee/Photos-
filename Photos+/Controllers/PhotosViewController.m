@@ -153,6 +153,7 @@ static void * photosToCheckKVO = &photosToCheckKVO;
 
 - (NSInteger)insertPhotoAsset:(PhotoAsset *)photoAsset {
     @synchronized(photoAsset) {
+        [[Crashlytics sharedInstance] setObjectValue:NSStringFromClass([self class]) forKey:@"TYPE"];
         NSInteger indexToInsert = 0;
         NSInteger index = [self.assets indexOfObject:photoAsset];
         NSInteger count = self.assets.count;
