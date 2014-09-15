@@ -22,6 +22,8 @@
 
 @property (nonatomic, strong, readonly) NSDictionary *exifMetadata;
 
+@property (nonatomic, strong, readonly) NSDictionary *tiffMetadata;
+
 @property (nonatomic, assign, getter = isScreenshot) BOOL screenshot;
 
 @property (nonatomic, assign) BOOL hasFaces;

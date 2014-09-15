@@ -24,6 +24,8 @@
 
 @property (nonatomic, strong) NSDictionary *exifMetadata;
 
+@property (nonatomic, strong) NSDictionary *tiffMetadata;
+
 @property (nonatomic, strong) ALAsset *rawAsset;
 
 @end
@@ -58,6 +60,13 @@
     return _exifMetadata;
 }
 
+- (NSDictionary *)tiffMetadata {
+    if (!_tiffMetadata) {
+        _tiffMetadata = self.metadata[(NSString *)kCGImagePropertyTIFFDictionary];
+    }
+    return _tiffMetadata;
+}
+
 - (NSNumber *)latitude {
     NSDictionary *gpsData = self.metadata[(NSString *)kCGImagePropertyGPSDictionary];
     return gpsData[(NSString *)kCGImagePropertyGPSLatitude];
@@ -81,12 +90,43 @@
     return [NSString stringWithFormat:@"%.0fx%.0f", self.rawAsset.defaultRepresentation.dimensions.width, self.rawAsset.defaultRepresentation.dimensions.height];
 }
 
+- (NSDate *)dateTakenDate {
+    NSString *dateTakenStr = self.metadata[(NSString *)kCGImagePropertyExifDictionary][(NSString *)kCGImagePropertyExifDateTimeOriginal];
+    if (!dateTakenStr) {
+        return nil;
+    }
+    static NSDateFormatter *dateFormatter = nil;
+    if (dateFormatter == nil) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy:mm:dd HH:mm:ss"];
+    }
+    NSDate *date = [dateFormatter dateFromString:dateTakenStr];
+    return date;
+}
+
+- (NSDateFormatter *)readableDateFormatter {
+    static NSDateFormatter *readableDateFormatter = nil;
+    if (readableDateFormatter == nil) {
+        readableDateFormatter = [[NSDateFormatter alloc] init];
+        [readableDateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"EdMMMyyyy HH:mm" options:0 locale:[NSLocale currentLocale]]];
+        //[readableDateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        //[readableDateFormatter setTimeStyle:NSDateFormatterShortStyle];
+    }
+    return readableDateFormatter;
+}
+
 - (NSString *)dateTakenString {
-    return self.metadata[(NSString *)kCGImagePropertyExifDictionary][(NSString *)kCGImagePropertyExifDateTimeOriginal];
+    NSDate *date = [self dateTakenDate];
+    
+    return [[self readableDateFormatter] stringFromDate:date];
 }
 
 - (NSString *)dateCreatedString {
-    return [NSString stringWithFormat:@"%@", self.dateCreated];
+    if (!self.dateCreated) {
+        return nil;
+    }
+    
+    return [[self readableDateFormatter] stringFromDate:self.dateCreated];
 }
 
 - (CLLocation *)clLocation {

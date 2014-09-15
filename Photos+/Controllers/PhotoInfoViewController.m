@@ -49,13 +49,14 @@
     self.sections = @[NSLocalizedString(@"Camera Data", nil)];
     //self.photo.rawAsset.defaultRepresentation.metadata
     NSString *metadataPath = NSStringFromSelector(@selector(exifMetadata));
+    NSString *tiffMetadataPath = NSStringFromSelector(@selector(tiffMetadata));
     self.cameraDataSectionRows = @[
-                                @[NSLocalizedString(@"Camera Make", nil), metadataPath, (NSString *)kCGImagePropertyExifLensMake],
-                                @[NSLocalizedString(@"Camera Model", nil), metadataPath, (NSString *)kCGImagePropertyExifLensModel],
-                                @[NSLocalizedString(@"Exposure Time", nil), metadataPath, (NSString *)kCGImagePropertyExifExposureTime],
-                                @[NSLocalizedString(@"F Number", nil), metadataPath, (NSString *)kCGImagePropertyExifFNumber],
-                                @[NSLocalizedString(@"Focal Length", nil), metadataPath, (NSString *)kCGImagePropertyExifFocalLength],
-                                @[NSLocalizedString(@"ISO Time", nil),  metadataPath, (NSString *)kCGImagePropertyExifISOSpeedRatings],
+                                @[NSLocalizedString(@"Camera Make", nil), tiffMetadataPath, (NSString *)kCGImagePropertyTIFFMake],
+                                @[NSLocalizedString(@"Camera Model", nil), tiffMetadataPath, (NSString *)kCGImagePropertyTIFFModel],
+                                @[NSLocalizedString(@"Exposure Time", nil), metadataPath, (NSString *)kCGImagePropertyExifExposureTime, @"%.3f"],
+                                @[NSLocalizedString(@"F Number", nil), metadataPath, (NSString *)kCGImagePropertyExifFNumber, @"%.1f"],
+                                @[NSLocalizedString(@"Focal Length", nil), metadataPath, (NSString *)kCGImagePropertyExifFocalLength, @"%.1f"],
+                                @[NSLocalizedString(@"ISO Time", nil),  metadataPath, (NSString *)kCGImagePropertyExifISOSpeedRatings, @"%.0f"],
                                 @[NSLocalizedString(@"Dimension", nil), NSStringFromSelector(@selector(dimensionString))],
                                 @[NSLocalizedString(@"Date Taken", nil), NSStringFromSelector(@selector(dateTakenString))],
                                 @[NSLocalizedString(@"Date Created", nil), NSStringFromSelector(@selector(dateCreatedString))],
@@ -157,7 +158,8 @@
                 }
             }
             if ([val isKindOfClass:[NSNumber class]]) {
-                val = [NSString stringWithFormat:@"%.1f", [val doubleValue]];
+                NSString *numberFormat = cameraDataRow[3];
+                val = [NSString stringWithFormat:numberFormat, [val doubleValue]];
             }
         } else {
             val = key;
