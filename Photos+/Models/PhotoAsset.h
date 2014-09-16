@@ -16,6 +16,8 @@
 
 @property (nonatomic, strong, readonly) UIImage *thumbnailImage;
 
+@property (nonatomic, strong, readonly) UIImage *originalImage;
+
 @property (nonatomic, strong, readonly) NSURL *url;
 
 @property (nonatomic, strong, readonly) NSDictionary *metadata;

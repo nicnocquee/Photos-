@@ -77,8 +77,8 @@
     [self.darkBackgroundView setBackgroundColor:[UIColor colorWithWhite:1 alpha:1]];
     [self.collectionView setBackgroundView:self.darkBackgroundView];
     
-    UIBarButtonItem *infoButton = [[UIBarButtonItem alloc] initWithTitle:@"Info" style:UIBarButtonItemStyleBordered target:self action:@selector(infoButtonTapped:)];
-    [self.navigationItem setRightBarButtonItem:infoButton];
+    UIBarButtonItem *shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonTapped:)];
+    [self.navigationItem setRightBarButtonItem:shareButton];
     
     [self insertDateInfoView];
 }
@@ -406,6 +406,17 @@
 
 - (void)photoInfoViewController:(PhotoInfoViewController *)photoInfo didDragToClose:(CGFloat)progress {
     [[[self currentCell] grayImageView] setAlpha:1-progress];
+}
+
+#pragma mark - share
+
+- (void)shareButtonTapped:(id)sender {
+    NSInteger currentPage = [self currentCollectionViewPage:self.collectionView];
+    PhotoAsset *asset = self.photos[currentPage];
+    UIImage *image = [asset originalImage];
+    
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[image] applicationActivities:nil];
+    [self presentViewController:activityVC animated:YES completion:nil];
 }
 
 @end

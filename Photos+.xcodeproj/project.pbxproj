@@ -89,6 +89,10 @@
 		03BFE5DC19AB442B00E4FCA5 /* ShowFullScreenPhotosAnimatedTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BFE5D819AB442B00E4FCA5 /* ShowFullScreenPhotosAnimatedTransitioning.m */; };
 		03BFE5E319AB450400E4FCA5 /* PhotoZoomableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BFE5E119AB450400E4FCA5 /* PhotoZoomableCell.m */; };
 		03BFE5E419AB450400E4FCA5 /* PhotoZoomableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BFE5E119AB450400E4FCA5 /* PhotoZoomableCell.m */; };
+		03CE49A919C7C70A00817C28 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CE49A819C7C70A00817C28 /* AddressBook.framework */; };
+		03CE49AA19C7C71000817C28 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CE49A819C7C70A00817C28 /* AddressBook.framework */; };
+		03CE49AE19C7C75800817C28 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CE49AD19C7C75800817C28 /* MediaPlayer.framework */; };
+		03CE49AF19C7C76500817C28 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CE49AD19C7C75800817C28 /* MediaPlayer.framework */; };
 		03E14FCA199F29DB000F3ECE /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03E14FC9199F29DB000F3ECE /* Crashlytics.framework */; };
 		03E14FCF199F2DD4000F3ECE /* AppDelegate+Services.m in Sources */ = {isa = PBXBuildFile; fileRef = 03E14FCE199F2DD4000F3ECE /* AppDelegate+Services.m */; };
 		3116FC63C2734B1EBEF94F7D /* libPods-Photos+.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 89DDB99A84074F3096D58B84 /* libPods-Photos+.a */; };
@@ -178,6 +182,9 @@
 		03BFE5D819AB442B00E4FCA5 /* ShowFullScreenPhotosAnimatedTransitioning.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowFullScreenPhotosAnimatedTransitioning.m; sourceTree = "<group>"; };
 		03BFE5E119AB450400E4FCA5 /* PhotoZoomableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoZoomableCell.m; sourceTree = "<group>"; };
 		03BFE5E219AB450400E4FCA5 /* PhotoZoomableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoZoomableCell.h; sourceTree = "<group>"; };
+		03CE49A819C7C70A00817C28 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		03CE49AB19C7C72B00817C28 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		03CE49AD19C7C75800817C28 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		03E14FC9199F29DB000F3ECE /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		03E14FCD199F2DD4000F3ECE /* AppDelegate+Services.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+Services.h"; path = "Categories/AppDelegate+Services.h"; sourceTree = "<group>"; };
 		03E14FCE199F2DD4000F3ECE /* AppDelegate+Services.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+Services.m"; path = "Categories/AppDelegate+Services.m"; sourceTree = "<group>"; };
@@ -190,6 +197,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03CE49AE19C7C75800817C28 /* MediaPlayer.framework in Frameworks */,
+				03CE49AA19C7C71000817C28 /* AddressBook.framework in Frameworks */,
 				03A3A22F1999E9370055EF9E /* CoreGraphics.framework in Frameworks */,
 				03E14FCA199F29DB000F3ECE /* Crashlytics.framework in Frameworks */,
 				03A3A2311999E9370055EF9E /* UIKit.framework in Frameworks */,
@@ -212,6 +221,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03CE49AF19C7C76500817C28 /* MediaPlayer.framework in Frameworks */,
+				03CE49A919C7C70A00817C28 /* AddressBook.framework in Frameworks */,
 				03BFE5C319AB3CA400E4FCA5 /* CoreGraphics.framework in Frameworks */,
 				03BFE5C419AB3CA400E4FCA5 /* Crashlytics.framework in Frameworks */,
 				03BFE5C519AB3CA400E4FCA5 /* UIKit.framework in Frameworks */,
@@ -261,6 +272,9 @@
 		03A3A22B1999E9370055EF9E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				03CE49AD19C7C75800817C28 /* MediaPlayer.framework */,
+				03CE49AB19C7C72B00817C28 /* AVFoundation.framework */,
+				03CE49A819C7C70A00817C28 /* AddressBook.framework */,
 				03E14FC9199F29DB000F3ECE /* Crashlytics.framework */,
 				03A3A22C1999E9370055EF9E /* Foundation.framework */,
 				03A3A22E1999E9370055EF9E /* CoreGraphics.framework */,

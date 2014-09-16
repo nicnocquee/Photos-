@@ -28,6 +28,8 @@
 
 @property (nonatomic, strong) ALAsset *rawAsset;
 
+@property (nonatomic, strong) UIImage *originalImage;
+
 @end
 
 @implementation PhotoAsset
@@ -44,6 +46,13 @@
         _thumbnailImage = [UIImage imageWithCGImage:[self.rawAsset thumbnail]];
     }
     return _thumbnailImage;
+}
+
+- (UIImage *)originalImage {
+    if (!_originalImage) {
+        _originalImage = [UIImage imageWithCGImage:[self.assetRepresentation fullResolutionImage]];
+    }
+    return _originalImage;
 }
 
 - (NSDictionary *)metadata {
